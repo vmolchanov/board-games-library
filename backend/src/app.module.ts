@@ -1,11 +1,26 @@
 import {Module} from '@nestjs/common';
-import {MongooseModule} from '@nestjs/mongoose';
+import {ConfigModule} from '@nestjs/config';
+import {SequelizeModule} from '@nestjs/sequelize';
 
-import {appConfig} from './app.config';
+import {UserModule} from './user/user.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(appConfig.db.uri),
+    ConfigModule.forRoot({
+      envFilePath: `.${process.env.NODE_ENV}.env`
+    }),
+    SequelizeModule.forRoot({
+      dialect: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      port: Number(process.env.POSTGRESS_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRESS_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      models: [],
+      autoLoadModels: true
+    }),
+
+    UserModule,
   ],
   controllers: [],
   providers: [],
