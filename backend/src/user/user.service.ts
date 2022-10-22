@@ -1,8 +1,13 @@
-import {Injectable, NotFoundException, ConflictException, BadRequestException} from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException
+} from '@nestjs/common';
+import {InjectModel} from '@nestjs/sequelize';
 
 import {User} from './user.model';
 import {UserDto} from './dto/user.dto';
-import {InjectModel} from '@nestjs/sequelize';
 
 @Injectable()
 export class UserService {
@@ -17,6 +22,11 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async isUserExist(id: string): Promise<boolean> {
+    const user = await this.userModel.findByPk(id);
+    return user !== null;
   }
 
   async getAllUsers(): Promise<User[]> {
