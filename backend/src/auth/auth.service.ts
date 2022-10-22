@@ -61,11 +61,20 @@ export class AuthService {
     return this.generateLoginTokens(Object.assign({}, user));
   }
 
+  /**
+   * Сгенерировать новые access и refresh токены
+   * @param {TRefreshToken} refreshToken
+   */
   async refreshTokens(refreshToken: TRefreshToken): Promise<ITokensPair> {
     const user = await this.validateToken(refreshToken, this.REFRESH_TOKEN_SECRET);
     return this.generateLoginTokens(user);
   }
 
+  /**
+   * Проверяет токен на валидность
+   * @param {TAccessToken | TRefreshToken | TLoginToken} token
+   * @param {String} secret
+   */
   async validateToken(token: TAccessToken | TRefreshToken | TLoginToken, secret: string): Promise<UserDto> {
     try {
       if (!token) {
@@ -85,7 +94,7 @@ export class AuthService {
 
   /**
    * Генерирует access и refresh токены
-   * @param userDto
+   * @param {UserDto} userDto
    */
   generateLoginTokens(userDto: UserDto): ITokensPair {
     const accessToken = jwt.sign(userDto, this.ACCESS_TOKEN_SECRET, {
