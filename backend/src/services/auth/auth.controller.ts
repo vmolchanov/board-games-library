@@ -1,10 +1,10 @@
 import {Controller, Post, Body, Res, Req} from '@nestjs/common';
 
 import {ApiTags} from '@nestjs/swagger';
-import {UseSwagger} from '../app.decorator';
+import {UseSwagger} from '../../app.decorator';
 import {swaggerConfig} from './auth.swagger';
 
-import {UserDto} from '../user/dto/user.dto';
+import {UserDto} from '../user/user.dto';
 import {GenerateLoginLinkDto} from './dto/generate-login-link';
 import {LoginByAuthTokenDto} from './dto/login-by-auth-token';
 import {RefreshTokensResponseDto} from './dto/refresh-tokens-response';

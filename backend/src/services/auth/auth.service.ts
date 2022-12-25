@@ -6,7 +6,7 @@ import type {JwtPayload} from 'jsonwebtoken';
 import type {ITokensPair} from './auth.types';
 import type {TAccessToken, TLoginToken, TRefreshToken} from './auth.types';
 
-import {UserDto} from '../user/dto/user.dto';
+import {UserDto} from '../user/user.dto';
 import {UserService} from '../user/user.service';
 import {GenerateLoginLinkDto} from './dto/generate-login-link';
 
@@ -37,9 +37,10 @@ export class AuthService {
    * @return {string} - ссылка типа http://localhost:8080/join/<token>
    */
   async generateLoginLink(userDto: UserDto): Promise<GenerateLoginLinkDto> {
-    const user = await this.userService.isUserExist(userDto.telegramId)
-      ? await this.userService.getUserById(userDto.telegramId)
-      : await this.userService.createUser(userDto);
+    let user = await this.userService.getUserByTelegramId(userDto.telegramId);
+    if (user === null) {
+      user = await this.userService.createUser(userDto);
+    }
 
     const authTokenPayload = {user};
 
