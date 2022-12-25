@@ -1,6 +1,6 @@
-import {ISwaggerConfig} from '../app';
+import {ISwaggerConfig} from '../../app';
 
-import {UserDto} from '../user/dto/user.dto';
+import {UserDto} from '../user/user.dto';
 import {GenerateLoginLinkDto} from './dto/generate-login-link';
 import {LoginByAuthTokenDto} from './dto/login-by-auth-token';
 import {RefreshTokensResponseDto} from './dto/refresh-tokens-response';

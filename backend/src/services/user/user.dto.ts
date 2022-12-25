@@ -1,12 +1,17 @@
 import {ApiProperty} from '@nestjs/swagger';
+import {IsNotEmpty, IsString} from 'class-validator';
 
 export class UserDto {
+  readonly id?: number;
+
   @ApiProperty({
     type: String,
     description: 'Уникальный идентификатор в telegram',
     example: 'fj34gyutrgfdhj434',
     required: true,
   })
+  @IsString()
+  @IsNotEmpty()
   readonly telegramId: string;
 
   @ApiProperty({
@@ -15,6 +20,8 @@ export class UserDto {
     example: 'Vladimir',
     required: true,
   })
+  @IsString()
+  @IsNotEmpty()
   readonly firstName: string;
 
   @ApiProperty({
@@ -23,7 +30,8 @@ export class UserDto {
     example: 'Ivanov',
     required: false,
   })
-  readonly lastName: string;
+  @IsString()
+  readonly lastName?: string;
 
   @ApiProperty({
     type: String,
@@ -31,5 +39,6 @@ export class UserDto {
     example: 'ivavleg',
     required: false,
   })
-  readonly userName: string;
+  @IsString()
+  readonly userName?: string;
 }

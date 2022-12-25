@@ -2,8 +2,10 @@ import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {SequelizeModule} from '@nestjs/sequelize';
 
-import {AuthModule} from './auth/auth.module';
-import {UserModule} from './user/user.module';
+import {AuthModule} from './services/auth/auth.module';
+import {UserModule} from './services/user/user.module';
+import {CodenamesModule} from './services/codenames/codenames.module';
+import {AppRoutingModule} from './app-routing.module';
 
 @Module({
   imports: [
@@ -21,8 +23,11 @@ import {UserModule} from './user/user.module';
       autoLoadModels: true
     }),
 
+    AppRoutingModule,
+
     AuthModule,
     UserModule,
+    CodenamesModule,
   ],
   controllers: [],
   providers: [],

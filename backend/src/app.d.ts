@@ -1,7 +1,8 @@
 import {ApiBodyOptions} from '@nestjs/swagger/dist/decorators/api-body.decorator';
 import {ApiOperationOptions} from '@nestjs/swagger/dist/decorators/api-operation.decorator';
 import {ApiResponseOptions} from '@nestjs/swagger/dist/decorators/api-response.decorator';
-import {ApiPropertyOptions} from '@nestjs/swagger/dist/decorators/api-property.decorator';
+import {Socket} from 'socket.io';
+import {User} from './services/user/user.model';
 
 export interface ISwaggerConfig {
   apiBody?: ApiBodyOptions;
@@ -34,3 +35,7 @@ export interface ISwaggerConfig {
   apiUnsupportedMediaTypeResponse?: ApiResponseOptions;
   apiDefaultResponse?: ApiResponseOptions;
 }
+
+export type TEditDto<T, K extends keyof T = 'id'> = Partial<T> & Pick<T, K>;
+
+export type TAuthorizedSocket = Socket & {user: User};
