@@ -34,7 +34,7 @@ export class AuthService {
   /**
    * Генерирует ссылку для аутентификации
    * @param {UserDto} userDto
-   * @return {string} - ссылка типа http://localhost:8080/join/<token>
+   * @return {string} - ссылка типа http://127.0.0.1:5173/join/<header>/<payload>/<signature>
    */
   async generateLoginLink(userDto: UserDto): Promise<GenerateLoginLinkDto> {
     let user = await this.userService.getUserByTelegramId(userDto.telegramId);
@@ -48,8 +48,10 @@ export class AuthService {
       expiresIn: this.AUTH_TOKEN_EXPIRES_IN
     });
 
+    const [header, payload, signature] = authToken.split('.');
+
     return {
-      link: `http://localhost:8080/join/${authToken}`,
+      link: `http://127.0.0.1:5173/join/${header}/${payload}/${signature}`,
     };
   }
 
@@ -87,7 +89,13 @@ export class AuthService {
         throw new UnauthorizedException('Невалидный токен');
       }
 
-      return payload.user;
+      return {
+        id: payload.id,
+        telegramId: payload.telegramId,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        userName: payload.userName,
+      };
     } catch {
       throw new UnauthorizedException('Невалидный токен');
     }

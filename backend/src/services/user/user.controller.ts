@@ -12,31 +12,31 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getAllUsers() {
     return await this.userService.getAllUsers();
   }
 
   @Get(':userId')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getUserById(@Param('userId') userId) {
     return this.userService.getUserById(userId);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async createUser(@Body() userDto: UserDto): Promise<User> {
     return this.userService.createUser(userDto);
   }
 
   @Put()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async editUser(@Body() userDto: UserDto): Promise<User> {
     return this.userService.editUser(userDto);
   }
 
   @Delete()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async deleteUser(@Body('id') userid: string): Promise<void> {
     return this.userService.deleteUser(userid);
   }

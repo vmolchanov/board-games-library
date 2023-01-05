@@ -1,7 +1,6 @@
-import {IsNumber} from 'class-validator';
+import {IsNumber, IsString} from 'class-validator';
 
 export class PlayerDto {
-  @IsNumber()
   readonly id?: number;
 
   @IsNumber()
@@ -10,6 +9,6 @@ export class PlayerDto {
   @IsNumber()
   readonly userId?: number;
 
-  @IsNumber()
+  @IsString()
   readonly role?: string;
 }

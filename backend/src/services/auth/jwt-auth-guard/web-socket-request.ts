@@ -9,7 +9,7 @@ export class WebSocketRequest extends AbstractRequest implements IRequest {
   }
 
   public getToken(): string {
-    return (this.req as Socket).handshake.headers.authorization;
+    return (this.req as Socket).handshake.auth.token;
   }
 
   public handleOnReject(): void {

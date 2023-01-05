@@ -9,9 +9,17 @@ import {PlayerService} from '../children/player/player.service';
 import {CodenamesGatewayService} from './codenames.gateway.service';
 import {CodenamesService} from '../codenames.service';
 import {WordDto} from '../children/word/word.dto';
+import {JwtAuthGuard} from '../../auth/jwt-auth-guard';
+import {UseGuards} from '@nestjs/common';
 
 
-@WebSocketGateway(7001)
+@WebSocketGateway(7001, {
+  cors: {
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: 'http://127.0.0.1:5173',
+    credentials: true,
+  }
+})
 export class CodenamesGateway {
   constructor(
     private readonly sessionService: SessionService,
@@ -23,7 +31,38 @@ export class CodenamesGateway {
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client): any {
+  handleConnection(client: Socket): void {
+    console.log('connect');
+
+    const token = client.handshake.auth.token;
+
+    if (!token) {
+      client.disconnect();
+      return;
+    }
+
+    // this.codenamesGatewayService.initGame();
+
+    // client.emit('initGame', 'dd');
+  }
+
+  handleDisconnect(client): any {
+    console.log('disconnect');
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage('initGame')
+  init(@ConnectedSocket() socket: TAuthorizedSocket): object {
+    return socket.user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage('test')
+  test(@ConnectedSocket() socket: TAuthorizedSocket, @MessageBody() word: string): string {
+    console.log('word', word);
+    socket.emit('servertest', word.toUpperCase());
+
+    return word.toLowerCase();
   }
 
   @SubscribeMessage('message')

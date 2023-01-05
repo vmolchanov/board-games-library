@@ -9,6 +9,7 @@ import {Injectable} from '@nestjs/common';
 import {WordDto} from '../children/word/word.dto';
 import {SessionWordService} from '../children/session-word/session-word.service';
 import {THero} from '../codenames';
+import {UserDto} from '../../user/user.dto';
 
 @Injectable()
 export class CodenamesGatewayService {
@@ -89,6 +90,12 @@ export class CodenamesGatewayService {
     }
 
     return player[0];
+  }
+
+  initGame(user: UserDto): void {
+    // 1. find session
+
+    // 2.
   }
 
   isPlayerHasRoles(player: Player, ...roles: ERole[]): boolean {
