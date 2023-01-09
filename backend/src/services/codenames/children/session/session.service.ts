@@ -36,9 +36,8 @@ export class SessionService {
   }
 
   getHeroInKeyByPosition(key: string, position: number): THero {
-    return key
-      .slice(2)
-      .replaceAll(',', '')
-      [position] as THero;
+    const sliced = key.slice(2);
+    const replaced = sliced.replace(/,/g, '');
+    return replaced[position] as THero;
   }
 }

@@ -8,8 +8,14 @@ import {Player} from '../children/player/player.model';
 import {Injectable} from '@nestjs/common';
 import {WordDto} from '../children/word/word.dto';
 import {SessionWordService} from '../children/session-word/session-word.service';
-import {THero} from '../codenames';
+import type {THero} from '../codenames';
 import {UserDto} from '../../user/user.dto';
+import {InitGameDto} from './dto/init-game-dto';
+import {FieldStateDto} from './dto/field-state-dto';
+import {WordService} from '../children/word/word.service';
+import {TWordState} from '../codenames';
+import {SessionWord} from '../children/session-word/session-word.model';
+import {SessionDto} from '../children/session/session.dto';
 
 @Injectable()
 export class CodenamesGatewayService {
@@ -17,6 +23,7 @@ export class CodenamesGatewayService {
     private readonly sessionService: SessionService,
     private readonly userService: UserService,
     private readonly playerService: PlayerService,
+    private readonly wordService: WordService,
     private readonly sessionWordService: SessionWordService,
   ) {}
 
@@ -36,10 +43,11 @@ export class CodenamesGatewayService {
 
     const nextMove = session.move === ERole.BLUE_CAPTAIN ? ERole.BLUE_AGENT : ERole.RED_AGENT;
 
-    await session.update({
+    await this.sessionService.editSession({
+      ...session,
       tip,
       move: nextMove,
-    });
+    } as SessionDto);
   }
 
   async makeMove(user: User, sessionId: number, word: WordDto): Promise<void> {
@@ -47,7 +55,7 @@ export class CodenamesGatewayService {
 
     const player: Player = await this.getPlayerByUserAndSession(user, session);
 
-    if (player === null || !this.isPlayerHasRoles(player, ERole.BLUE_CAPTAIN, ERole.RED_CAPTAIN)) {
+    if (player === null || !this.isPlayerHasRoles(player, ERole.BLUE_AGENT, ERole.RED_AGENT)) {
       throw new Error();
     }
 
@@ -71,10 +79,9 @@ export class CodenamesGatewayService {
     // Первая буква роли соответствует персонажу в ключе
     if (player.role[0] !== hero) {
       const nextMove = session.move === ERole.BLUE_AGENT ? ERole.RED_CAPTAIN : ERole.BLUE_CAPTAIN;
-      await session.update({
-        tip: '',
-        move: nextMove,
-      });
+      session.tip = '';
+      session.move = nextMove;
+      await this.sessionService.editSession(session);
     }
   }
 
@@ -92,10 +99,45 @@ export class CodenamesGatewayService {
     return player[0];
   }
 
-  initGame(user: UserDto): void {
-    // 1. find session
+  async initGame(user: UserDto): Promise<InitGameDto> {
+    const currentUser: User = await this.userService.getUserByTelegramId(user.telegramId);
+    const player: Player = (await this.playerService.getPlayerByUserId(currentUser.id))[0];
+    const session: Session = await this.sessionService.getSessionById(player.sessionId);
+    const sessionWords: SessionWord[] = await this.sessionWordService.getSessionWordByParams({
+      sessionId: session.id,
+    });
 
-    // 2.
+    const fieldState: FieldStateDto[] = [];
+
+    for (let i = 0; i < sessionWords.length; i++) {
+      const sessionWord: SessionWord = sessionWords[i];
+      const word = await this.wordService.getWordById(sessionWord.wordId);
+
+      let state: TWordState;
+
+      if (!sessionWord.open) {
+        state = 'NOT_OPENED';
+      } else {
+        const hero: THero = this.sessionService.getHeroInKeyByPosition(session.key, sessionWord.position);
+        const heroToState: Record<THero, TWordState> = {
+          R: 'RED_AGENT',
+          B: 'BLUE_AGENT',
+          K: 'KILLER',
+          N: 'NEUTRAL',
+        };
+        state = heroToState[hero];
+      }
+
+      fieldState.push({word, state, position: sessionWord.position});
+    }
+
+    return {
+      currentPlayer: {...currentUser, role: player.role} as User & {role: ERole},
+      fieldState,
+      move: session.move,
+      tip: session.tip,
+      sessionId: session.id,
+    };
   }
 
   isPlayerHasRoles(player: Player, ...roles: ERole[]): boolean {

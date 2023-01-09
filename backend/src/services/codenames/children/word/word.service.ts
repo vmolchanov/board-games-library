@@ -26,6 +26,18 @@ export class WordService {
     return await this._dbService.createEntity(wordDto, {value: wordDto.value});
   }
 
+  async addWords(wordDtos: WordDto[]): Promise<Word[]> {
+    const queries = [];
+
+    wordDtos.forEach(wordDto => {
+      queries.push(
+        this._dbService.createEntity(wordDto, {value: wordDto.value})
+      );
+    });
+
+    return await Promise.all(queries);
+  }
+
   async editWord(wordDto: WordDto): Promise<Word> {
     return await this._dbService.updateEntity(wordDto);
   }

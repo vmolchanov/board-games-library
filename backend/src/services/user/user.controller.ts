@@ -13,31 +13,36 @@ export class UserController {
 
   @Get()
   // @UseGuards(JwtAuthGuard)
-  async getAllUsers() {
+  async getAllUsers(): Promise<User[]> {
     return await this.userService.getAllUsers();
   }
 
   @Get(':userId')
   // @UseGuards(JwtAuthGuard)
-  async getUserById(@Param('userId') userId) {
-    return this.userService.getUserById(userId);
+  async getUserById(@Param('userId') userId): Promise<User> {
+    return await this.userService.getUserById(userId);
   }
 
   @Post()
   // @UseGuards(JwtAuthGuard)
   async createUser(@Body() userDto: UserDto): Promise<User> {
-    return this.userService.createUser(userDto);
+    return await this.userService.createUser(userDto);
+  }
+
+  @Post('/list')
+  async createUsers(@Body() userDtos: UserDto[]): Promise<User[]> {
+    return await this.userService.createUsers(userDtos);
   }
 
   @Put()
   // @UseGuards(JwtAuthGuard)
   async editUser(@Body() userDto: UserDto): Promise<User> {
-    return this.userService.editUser(userDto);
+    return await this.userService.editUser(userDto);
   }
 
   @Delete()
   // @UseGuards(JwtAuthGuard)
   async deleteUser(@Body('id') userid: string): Promise<void> {
-    return this.userService.deleteUser(userid);
+    return await this.userService.deleteUser(userid);
   }
 }

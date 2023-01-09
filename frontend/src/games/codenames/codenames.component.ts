@@ -1,8 +1,8 @@
 import {defineComponent} from 'vue';
 import TipForm from './components/tip-form/tip-form.vue';
 import WordList from './components/word-list/word-list.vue';
-// import io, {Socket} from 'socket.io-client';
 import {WebsocketService} from '../../config/websocket-service/websocket-service';
+import {ICodenamesState} from './codenames';
 
 enum EWordStatus {
   NOT_OPENED,
@@ -17,6 +17,11 @@ interface IWord {
   state: EWordStatus;
 }
 
+interface ITipFormSubmit {
+  tip: string;
+  count: number;
+}
+
 export default defineComponent({
   name: 'codenames-game',
   components: {
@@ -24,8 +29,13 @@ export default defineComponent({
     WordList,
   },
   created() {
-    this.ws.on('initGame', (data: object) => {
-      console.log('initGame', data)
+    this.ws.on('initGame', (data: ICodenamesState) => {
+      this.state = data;
+      if (!this.isFieldShown) {
+        this.ws.emit('JOIN_ROOM', {room: data.sessionId}, () => {
+          this.isFieldShown = true;
+        });
+      }
     });
   },
   data() {
@@ -33,43 +43,57 @@ export default defineComponent({
       ws: WebsocketService.connect('ws://localhost:7001', {
         transports: ['websocket', 'polling'],
       }),
-      words: [
-        {value: 'Чаша', state: EWordStatus.NOT_OPENED},
-        {value: 'Мешок', state: EWordStatus.NOT_OPENED},
-        {value: 'Олень', state: EWordStatus.NOT_OPENED},
-        {value: 'Пила', state: EWordStatus.NOT_OPENED},
-        {value: 'Сестра', state: EWordStatus.NOT_OPENED},
-        {value: 'Пещера', state: EWordStatus.NOT_OPENED},
-        {value: 'Директор', state: EWordStatus.NOT_OPENED},
-        {value: 'Муравей', state: EWordStatus.NOT_OPENED},
-        {value: 'Фиалка', state: EWordStatus.NOT_OPENED},
-        {value: 'Рис', state: EWordStatus.NOT_OPENED},
-        {value: 'Сани', state: EWordStatus.NOT_OPENED},
-        {value: 'Вулкан', state: EWordStatus.NOT_OPENED},
-        {value: 'Чернила', state: EWordStatus.NOT_OPENED},
-        {value: 'Беспорядок', state: EWordStatus.NOT_OPENED},
-        {value: 'Космонавт', state: EWordStatus.NOT_OPENED},
-        {value: 'Сказка', state: EWordStatus.NOT_OPENED},
-        {value: 'Заросли', state: EWordStatus.NOT_OPENED},
-        {value: 'Зелень', state: EWordStatus.NOT_OPENED},
-        {value: 'Гимн', state: EWordStatus.NOT_OPENED},
-        {value: 'Губка', state: EWordStatus.NOT_OPENED},
-        {value: 'Чаща', state: EWordStatus.NOT_OPENED},
-        {value: 'Почва', state: EWordStatus.NOT_OPENED},
-        {value: 'Брат', state: EWordStatus.NOT_OPENED},
-        {value: 'Колдун', state: EWordStatus.NOT_OPENED},
-        {value: 'Шланг', state: EWordStatus.NOT_OPENED},
-      ] as IWord[],
+      state: null as ICodenamesState | null,
+      isFieldShown: false,
     };
   },
   computed: {
-    getWords() {},
+    getCaptainRole() {
+      const [color] = this.state!.currentPlayer.role.split('_');
+      return `${color}_CAPTAIN`;
+    },
+    isMeCaptain() {
+      const [color, post] = this.state?.currentPlayer.role.split('_');
+      return post === 'CAPTAIN';
+    },
   },
   methods: {
+    getWordClasses(state: string): string[] {
+      const classes = ['card'];
+
+      switch (state) {
+        case 'RED_AGENT':
+          classes.push('red');
+          break;
+        case 'BLUE_AGENT':
+          classes.push('blue');
+          break;
+        case 'NEUTRAL':
+          classes.push('neutral');
+          break;
+        case 'KILLER':
+          classes.push('killer');
+          break;
+      }
+
+      return classes;
+    },
+
     onWordClick(word) {
-      this.ws!.emit('test', word, (answer) => {
-        console.log('answer', answer);
-      });
+      if (!this.isMeCaptain && this.state?.currentPlayer.role === this.state.move) {
+        const {id, value} = word;
+        this.ws!.emit('MAKE_MOVE', {
+          word: {id, value},
+        });
+      }
+    },
+
+    onTipFormSubmit(obj: ITipFormSubmit) {
+      if (this.isMeCaptain && 'tip' in obj && 'count' in obj) {
+        this.ws.emit('MAKE_TIP', {
+          tip: `${obj.tip}, ${obj.count}`,
+        });
+      }
     },
   },
 });

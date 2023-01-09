@@ -23,6 +23,11 @@ export class WordController {
     return await this.wordService.addWord(wordDto);
   }
 
+  @Post('/list')
+  async addWords(@Body() wordDtos: WordDto[]): Promise<Word[]> {
+    return await this.wordService.addWords(wordDtos);
+  }
+
   @Put()
   async editWord(@Body() wordDto: WordDto): Promise<Word> {
     return await this.wordService.editWord(wordDto);

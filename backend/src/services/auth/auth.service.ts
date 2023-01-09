@@ -42,7 +42,7 @@ export class AuthService {
       user = await this.userService.createUser(userDto);
     }
 
-    const authTokenPayload = {user};
+    const authTokenPayload = user;
 
     const authToken = jwt.sign(authTokenPayload, this.AUTH_TOKEN_SECRET, {
       expiresIn: this.AUTH_TOKEN_EXPIRES_IN
@@ -71,6 +71,10 @@ export class AuthService {
   async refreshTokens(refreshToken: TRefreshToken): Promise<ITokensPair> {
     const user = await this.validateToken(refreshToken, this.REFRESH_TOKEN_SECRET);
     return this.generateLoginTokens(user);
+  }
+
+  async getUserByToken(token: TAccessToken): Promise<UserDto> {
+    return await this.validateToken(token, this.ACCESS_TOKEN_SECRET);
   }
 
   /**

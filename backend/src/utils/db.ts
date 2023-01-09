@@ -10,7 +10,7 @@ export class DbService<DtoType, ModelType extends Model> {
   }
 
   async getEntityById(id: number | string): Promise<ModelType> {
-    return await this._model.findByPk(id);
+    return (await this._model.findByPk(id)).dataValues;
   }
 
   async getAllEntities(): Promise<ModelType[]> {
@@ -51,16 +51,17 @@ export class DbService<DtoType, ModelType extends Model> {
   }
 
   async findOne(where: object = {}): Promise<ModelType> {
-    return await this._model.findOne({
+    const obj: any = await this._model.findOne({
       where,
       rejectOnEmpty: false,
     });
+    return obj.dataValues;
   }
 
   async find(where: object = {}): Promise<ModelType[]> {
-    return await this._model.findAll({
+    return (await this._model.findAll({
       where,
       rejectOnEmpty: false,
-    });
+    })).map(obj => obj.dataValues);
   }
 }

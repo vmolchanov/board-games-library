@@ -23,6 +23,7 @@ import {
   TOTAL_HEROES
 } from './codenames.constant';
 import {Session} from './children/session/session.model';
+import {NumberHelpers} from '../../utils/number-helpers';
 
 
 @Injectable()
@@ -46,9 +47,10 @@ export class CodenamesService {
   }
 
   async initializeSession(chatId: string): Promise<Session> {
+    console.log('here')
     const key = this.generateKey();
     const start = key[0];
-    const move = start === EHeroCharacter.RED_AGENT ? ERole.RED_AGENT : ERole.BLUE_AGENT;
+    const move = start === EHeroCharacter.RED_AGENT ? ERole.RED_CAPTAIN : ERole.BLUE_CAPTAIN;
 
     return  await this.sessionService.addSession({
       chatId,
@@ -93,7 +95,7 @@ export class CodenamesService {
 
   async initializeWords(words: Word[], session: Session): Promise<void> {
     for (let i = 0; i < TOTAL_HEROES; i++) {
-      const wordIndex = ArrayHelpers.getRandomElement<Word>(words);
+      const wordIndex: number = NumberHelpers.random(0, words.length);
       await this.sessionWordService.addSessionWord({
         sessionId: session.id,
         wordId: words[wordIndex].id,

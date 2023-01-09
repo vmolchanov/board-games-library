@@ -15,8 +15,8 @@ export class ArrayHelpers {
     return array;
   }
 
-  static getRandomElement<T>(array: T[]) {
-    const index = NumberHelpers.random(0, array.length) === 0 ? 'R' : 'B';
+  static getRandomElement<T>(array: T[]): T {
+    const index = NumberHelpers.random(0, array.length);
     return array[index];
   }
 }

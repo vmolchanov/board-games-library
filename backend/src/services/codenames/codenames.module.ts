@@ -10,6 +10,7 @@ import {PlayerModule} from './children/player/player.module';
 import {WordModule} from './children/word/word.module';
 import {SessionWordModule} from './children/session-word/session-word.module';
 import {CodenamesGatewayService} from './sockets/codenames.gateway.service';
+import {AuthModule} from '../auth/auth.module';
 
 
 @Module({
@@ -22,6 +23,7 @@ import {CodenamesGatewayService} from './sockets/codenames.gateway.service';
     forwardRef(() => PlayerModule),
     forwardRef(() => WordModule),
     forwardRef(() => SessionWordModule),
+    forwardRef(() => AuthModule),
   ],
   controllers: [CodenamesController],
   providers: [CodenamesService, CodenamesGateway, CodenamesGatewayService],

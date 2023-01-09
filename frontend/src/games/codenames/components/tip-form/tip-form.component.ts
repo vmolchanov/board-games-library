@@ -10,7 +10,7 @@ export default defineComponent({
   },
   methods: {
     onFormSubmit() {
-      this.$emit('tip', {
+      this.$emit('submit', {
         tip: this.tip,
         count: this.count,
       });

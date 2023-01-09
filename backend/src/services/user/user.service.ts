@@ -40,6 +40,18 @@ export class UserService {
     return await this._dbService.createEntity(userDto, {telegramId: userDto.telegramId});
   }
 
+  async createUsers(userDtos: UserDto[]): Promise<User[]> {
+    const queries = [];
+
+    userDtos.forEach(userDto => {
+      queries.push(
+        this._dbService.createEntity(userDto, {telegramId: userDto.telegramId})
+      );
+    });
+
+    return await Promise.all(queries);
+  }
+
   async editUser(userDto: UserDto): Promise<User> {
     return await this._dbService.updateEntity(userDto);
   }

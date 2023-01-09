@@ -1,26 +1,32 @@
 <template>
-  <div class="codenames">
+  <div class="codenames" v-if="isFieldShown">
     <header>
       <div class="logo">Codenames</div>
     </header>
 
     <div class="container">
       <div class="header">
-        <h2>Ваш ход</h2>
+        <h2 v-if="state.move === state.currentPlayer.role">Ваш ход</h2>
+        <h2 v-else-if="state.move === getCaptainRole">Ход капитана</h2>
+        <h2 v-else>Ход соперника</h2>
       </div>
 
       <div class="content">
-        <p>Кушац, 2 слова</p>
+        <tip-form
+          v-if="state.move === state.currentPlayer.role && isMeCaptain"
+          @submit="onTipFormSubmit"
+        />
+        <p>{{state.tip}}</p>
       </div>
 
       <div class="cards">
         <div
-          v-for="(word, i) in words"
-          :key="i"
-          class="card"
-          @click="onWordClick(word.value)"
+          v-for="(fieldState) in state.fieldState"
+          :key="fieldState.position"
+          :class="getWordClasses(fieldState.state)"
+          @click="onWordClick(fieldState.word)"
         >
-          {{word.value}}
+          {{fieldState.word.value}}
         </div>
       </div>
     </div>
@@ -75,5 +81,13 @@
 
   .card.neutral {
     background-color: #ff880055;
+  }
+
+  .card.killer {
+    background-color: #00000055;
+  }
+
+  .content {
+    height: 60px;
   }
 </style>

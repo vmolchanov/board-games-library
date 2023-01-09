@@ -11,6 +11,9 @@ import {CodenamesService} from '../codenames.service';
 import {WordDto} from '../children/word/word.dto';
 import {JwtAuthGuard} from '../../auth/jwt-auth-guard';
 import {UseGuards} from '@nestjs/common';
+import {AuthService} from '../../auth/auth.service';
+import {UserDto} from '../../user/user.dto';
+import {InitGameDto} from './dto/init-game-dto';
 
 
 @WebSocketGateway(7001, {
@@ -26,24 +29,29 @@ export class CodenamesGateway {
     private readonly userService: UserService,
     private readonly playerService: PlayerService,
     private readonly codenamesGatewayService: CodenamesGatewayService,
+    private readonly authService: AuthService
   ) {}
 
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: Socket): void {
+  async handleConnection(client: Socket): Promise<void> {
     console.log('connect');
 
-    const token = client.handshake.auth.token;
+    const authToken = client.handshake.auth.token;
 
-    if (!token) {
+    if (!authToken) {
       client.disconnect();
       return;
     }
 
-    // this.codenamesGatewayService.initGame();
+    const [bearer, token] = authToken.split(' ');
 
-    // client.emit('initGame', 'dd');
+    const user: UserDto = await this.authService.getUserByToken(token);
+
+    const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(user);
+
+    client.emit('initGame', initGameDto);
   }
 
   handleDisconnect(client): any {
@@ -51,32 +59,12 @@ export class CodenamesGateway {
   }
 
   @UseGuards(JwtAuthGuard)
-  @SubscribeMessage('initGame')
-  init(@ConnectedSocket() socket: TAuthorizedSocket): object {
-    return socket.user;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @SubscribeMessage('test')
-  test(@ConnectedSocket() socket: TAuthorizedSocket, @MessageBody() word: string): string {
-    console.log('word', word);
-    socket.emit('servertest', word.toUpperCase());
-
-    return word.toLowerCase();
-  }
-
-  @SubscribeMessage('message')
-  handleMessage(@MessageBody() message: string): void {
-    this.server.emit('message', 'govno');
-  }
-
-  // @UseGuards(JwtAuthGuard)
   @SubscribeMessage(EClientCommand.JOIN_ROOM)
   async joinRoom(
     @ConnectedSocket() socket: TAuthorizedSocket,
     @MessageBody('room') room: number
-  ): Promise<void> {
-    const isValidSession = this.codenamesGatewayService.isValidSession(room);
+  ): Promise<string> {
+    const isValidSession = await this.codenamesGatewayService.isValidSession(room);
 
     if (!isValidSession) {
       socket.emit(EServerCommand.ERROR_JOIN_ROOM);
@@ -84,40 +72,49 @@ export class CodenamesGateway {
     }
 
     socket.join(room.toString());
+
+    return 'ok';
   }
 
-  @SubscribeMessage(EClientCommand.REQUEST_PLAYER_INFO)
-  requestPlayerInfo(socket): void {
-    this.server.to('gigi').emit('sss', 'govno');
-  }
-
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @SubscribeMessage(EClientCommand.MAKE_TIP)
   async makeTip(
     @ConnectedSocket() socket: TAuthorizedSocket,
     @MessageBody('tip') tip: string
   ): Promise<void> {
-    const room = socket.rooms[1];
+    const room: number | undefined = Number(Array.from(socket.rooms)[1]);
 
     if (!room) {
       return;
     }
 
     await this.codenamesGatewayService.makeTip(socket.user, room, tip);
+
+    const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(socket.user);
+
+    this.server
+      .to(room.toString())
+      .emit('initGame', initGameDto);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @SubscribeMessage(EClientCommand.MAKE_MOVE)
   async makeMove(
     @ConnectedSocket() socket: TAuthorizedSocket,
     @MessageBody('word') word: WordDto
   ): Promise<void> {
-    const room = socket.rooms[1];
+    const room: number | undefined = Number(Array.from(socket.rooms)[1]);
 
     if (!room) {
       return;
     }
 
     await this.codenamesGatewayService.makeMove(socket.user, room, word);
+
+    const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(socket.user);
+
+    this.server
+      .to(room.toString())
+      .emit('initGame', initGameDto);
   }
 }

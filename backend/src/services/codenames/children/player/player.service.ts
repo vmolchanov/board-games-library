@@ -22,7 +22,7 @@ export class PlayerService {
     return await this._dbService.getEntityById(id);
   }
 
-  async getPlayerByUserId(userId: number): Promise<Player[] | null> {
+  async getPlayerByUserId(userId: number): Promise<Player[]> {
     return await this._dbService.find({userId});
   }
 
