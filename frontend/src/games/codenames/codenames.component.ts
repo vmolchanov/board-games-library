@@ -2,25 +2,7 @@ import {defineComponent} from 'vue';
 import TipForm from './components/tip-form/tip-form.vue';
 import WordList from './components/word-list/word-list.vue';
 import {WebsocketService} from '../../config/websocket-service/websocket-service';
-import {ICodenamesState} from './codenames';
-
-enum EWordStatus {
-  NOT_OPENED,
-  BLUE,
-  RED,
-  NEUTRAL,
-  KILLER,
-}
-
-interface IWord {
-  value: string;
-  state: EWordStatus;
-}
-
-interface ITipFormSubmit {
-  tip: string;
-  count: number;
-}
+import type {ICodenamesState, IFieldState, ITipFormSubmit} from './codenames';
 
 export default defineComponent({
   name: 'codenames-game',
@@ -37,6 +19,13 @@ export default defineComponent({
         });
       }
     });
+
+    this.ws.on('updateState', (data: Omit<ICodenamesState, 'currentPlayer'>) => {
+      this.state!.fieldState = data.fieldState;
+      this.state!.move = data.move;
+      this.state!.sessionId = data.sessionId;
+      this.state!.tip = data.tip;
+    });
   },
   data() {
     return {
@@ -48,13 +37,45 @@ export default defineComponent({
     };
   },
   computed: {
-    getCaptainRole() {
-      const [color] = this.state!.currentPlayer.role.split('_');
+    getSortedFieldStateByPosition() {
+      return this.state!
+        .fieldState
+        .slice()
+        .sort((a: IFieldState, b: IFieldState) => a.position - b.position)
+    },
+
+    getCaptainRole(): string {
+      const [color] = (this.state!.currentPlayer.role as string).split('_');
       return `${color}_CAPTAIN`;
     },
-    isMeCaptain() {
-      const [color, post] = this.state?.currentPlayer.role.split('_');
+
+    isMeCaptain(): boolean {
+      const [color, post] = (this.state?.currentPlayer.role as string).split('_');
       return post === 'CAPTAIN';
+    },
+
+    getCountOfNotOpenedWords(): number {
+      return this.state!
+        .fieldState
+        .filter(({state}) => state === 'NOT_OPENED')
+        .length;
+    },
+
+    getAgentRoleOfAllies(): string {
+      const [color, post] = (this.state!.currentPlayer.role as string).split('_');
+      return `${color}_AGENT`;
+    },
+
+    isMoveOfMe(): boolean {
+      return this.state!.move === this.state!.currentPlayer.role;
+    },
+
+    isMoveOfCaptain(): boolean {
+      return this.state!.move === this.getCaptainRole;
+    },
+
+    isMoveOfMyTeam(): boolean {
+      return this.isMeCaptain && this.state!.move === this.getAgentRoleOfAllies;
     },
   },
   methods: {
@@ -79,7 +100,7 @@ export default defineComponent({
       return classes;
     },
 
-    onWordClick(word) {
+    onWordClick(word): void {
       if (!this.isMeCaptain && this.state?.currentPlayer.role === this.state.move) {
         const {id, value} = word;
         this.ws!.emit('MAKE_MOVE', {
@@ -88,7 +109,7 @@ export default defineComponent({
       }
     },
 
-    onTipFormSubmit(obj: ITipFormSubmit) {
+    onTipFormSubmit(obj: ITipFormSubmit): void {
       if (this.isMeCaptain && 'tip' in obj && 'count' in obj) {
         this.ws.emit('MAKE_TIP', {
           tip: `${obj.tip}, ${obj.count}`,

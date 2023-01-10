@@ -47,11 +47,15 @@ export class CodenamesGateway {
 
     const [bearer, token] = authToken.split(' ');
 
-    const user: UserDto = await this.authService.getUserByToken(token);
+    try {
+      const user: UserDto = await this.authService.getUserByToken(token);
 
-    const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(user);
+      const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(user);
 
-    client.emit('initGame', initGameDto);
+      client.emit('initGame', initGameDto);
+    } catch {
+      client.emit('unauthorized');
+    }
   }
 
   handleDisconnect(client): any {
@@ -92,9 +96,15 @@ export class CodenamesGateway {
 
     const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(socket.user);
 
+    delete initGameDto.currentPlayer;
+
+    // this.server
+    //   .to(room.toString())
+    //   .emit('initGame', initGameDto);
+
     this.server
       .to(room.toString())
-      .emit('initGame', initGameDto);
+      .emit('updateState', initGameDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -113,8 +123,14 @@ export class CodenamesGateway {
 
     const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(socket.user);
 
+    delete initGameDto.currentPlayer;
+
+    // this.server
+    //   .to(room.toString())
+    //   .emit('initGame', initGameDto);
+
     this.server
       .to(room.toString())
-      .emit('initGame', initGameDto);
+      .emit('updateState', initGameDto);
   }
 }

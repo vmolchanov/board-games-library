@@ -6,14 +6,16 @@
 
     <div class="container">
       <div class="header">
-        <h2 v-if="state.move === state.currentPlayer.role">Ваш ход</h2>
-        <h2 v-else-if="state.move === getCaptainRole">Ход капитана</h2>
+        <h2 v-if="isMoveOfMe">Ваш ход</h2>
+        <h2 v-else-if="isMoveOfCaptain">Ход капитана</h2>
+        <h2 v-else-if="isMoveOfMyTeam">Ходит ваша команда</h2>
         <h2 v-else>Ход соперника</h2>
       </div>
 
       <div class="content">
         <tip-form
           v-if="state.move === state.currentPlayer.role && isMeCaptain"
+          :count-of-not-opened-words="getCountOfNotOpenedWords"
           @submit="onTipFormSubmit"
         />
         <p>{{state.tip}}</p>
@@ -21,7 +23,7 @@
 
       <div class="cards">
         <div
-          v-for="(fieldState) in state.fieldState"
+          v-for="(fieldState) in getSortedFieldStateByPosition"
           :key="fieldState.position"
           :class="getWordClasses(fieldState.state)"
           @click="onWordClick(fieldState.word)"

@@ -1,7 +1,7 @@
 <template>
   <form action="#" @submit.prevent="onFormSubmit">
-    <input v-model="tip" type="text">
-    <input v-model="count" type="text">
+    <input ref="tipInputRef" v-model="tip" type="text">
+    <input ref="countInputRef" v-model="count" type="text">
     <button>Отправить</button>
   </form>
 </template>
