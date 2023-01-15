@@ -15,7 +15,9 @@ import {Word} from './children/word/word.model';
 
 import type {THero} from './codenames';
 import {
-  AGENTS_COUNT, EHeroCharacter, HEROES_COUNT_OF_CONTINUING_TEAM,
+  AGENTS_COUNT,
+  EHeroCharacter,
+  HEROES_COUNT_OF_CONTINUING_TEAM,
   HEROES_COUNT_OF_START_TEAM,
   KILLERS_COUNT,
   MINIMUM_PLAYERS_COUNT,
@@ -24,7 +26,6 @@ import {
 } from './codenames.constant';
 import {Session} from './children/session/session.model';
 import {NumberHelpers} from '../../utils/number-helpers';
-
 
 @Injectable()
 export class CodenamesService {
@@ -47,7 +48,6 @@ export class CodenamesService {
   }
 
   async initializeSession(chatId: string): Promise<Session> {
-    console.log('here')
     const key = this.generateKey();
     const start = key[0];
     const move = start === EHeroCharacter.RED_AGENT ? ERole.RED_CAPTAIN : ERole.BLUE_CAPTAIN;

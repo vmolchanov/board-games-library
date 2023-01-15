@@ -6,7 +6,6 @@ import {SessionWordService} from './session-word.service';
 import {SequelizeModule} from '@nestjs/sequelize';
 import {SessionWord} from './session-word.model';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

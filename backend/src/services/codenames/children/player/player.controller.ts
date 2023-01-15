@@ -3,7 +3,6 @@ import {PlayerService} from './player.service';
 import {Player} from './player.model';
 import {PlayerDto} from './player.dto';
 
-
 @Controller()
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}

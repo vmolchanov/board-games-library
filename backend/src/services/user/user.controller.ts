@@ -1,4 +1,13 @@
-import {Controller, Get, Post, Put, Delete, Param, Body, UseGuards} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  UseGuards
+} from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 
 import {UserService} from './user.service';
@@ -18,13 +27,12 @@ export class UserController {
   }
 
   @Get(':userId')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async getUserById(@Param('userId') userId): Promise<User> {
     return await this.userService.getUserById(userId);
   }
 
   @Post()
-  // @UseGuards(JwtAuthGuard)
   async createUser(@Body() userDto: UserDto): Promise<User> {
     return await this.userService.createUser(userDto);
   }
@@ -35,13 +43,13 @@ export class UserController {
   }
 
   @Put()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async editUser(@Body() userDto: UserDto): Promise<User> {
     return await this.userService.editUser(userDto);
   }
 
   @Delete()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async deleteUser(@Body('id') userid: string): Promise<void> {
     return await this.userService.deleteUser(userid);
   }

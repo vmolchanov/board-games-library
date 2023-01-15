@@ -6,7 +6,6 @@ import {PlayerService} from './player.service';
 import {SequelizeModule} from '@nestjs/sequelize';
 import {Player} from './player.model';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

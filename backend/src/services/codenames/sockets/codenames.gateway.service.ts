@@ -13,7 +13,7 @@ import {UserDto} from '../../user/user.dto';
 import {InitGameDto} from './dto/init-game-dto';
 import {FieldStateDto} from './dto/field-state-dto';
 import {WordService} from '../children/word/word.service';
-import {TWordState} from '../codenames';
+import type {TWordState} from '../codenames';
 import {SessionWord} from '../children/session-word/session-word.model';
 import {SessionDto} from '../children/session/session.dto';
 

@@ -5,7 +5,6 @@ import {SessionModule} from './children/session/session.module';
 import {SessionWordModule} from './children/session-word/session-word.module';
 import {WordModule} from './children/word/word.module';
 
-
 export const codenamesRouter = [
   {
     path: 'codenames',

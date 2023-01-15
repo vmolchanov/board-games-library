@@ -1,5 +1,5 @@
 import {ConflictException, NotFoundException} from '@nestjs/common';
-import {TEditDto} from '../app';
+import type {TEditDto} from '../app';
 import {Model} from 'sequelize-typescript';
 
 export class DbService<DtoType, ModelType extends Model> {
@@ -17,6 +17,13 @@ export class DbService<DtoType, ModelType extends Model> {
     return await this._model.findAll();
   }
 
+  /**
+   * Создает объект в базе данных
+   * @param dto – объект, который будет сохранен в базу
+   * @param where - параметры объекта для проверки его существования в базе
+   * @throws {ConflictException} - сохраняемый объект уже существует в базе
+   * @return Сохраненный объект
+   */
   async createEntity(dto: DtoType, where: object = {}): Promise<ModelType> {
     if (Object.keys(where).length !== 0) {
       const candidate = await this._model.findOne({

@@ -4,7 +4,6 @@ import {SessionWord} from './session-word.model';
 import {SessionWordDto} from './session-word.dto';
 import {DbService} from '../../../../utils/db';
 
-
 @Controller()
 export class SessionWordController {
   private _dbService: DbService<SessionWordDto, SessionWord>;

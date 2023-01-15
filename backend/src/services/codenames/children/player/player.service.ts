@@ -5,7 +5,6 @@ import {Player} from './player.model';
 import {DbService} from '../../../../utils/db';
 import {PlayerDto} from './player.dto';
 
-
 @Injectable()
 export class PlayerService {
   private _dbService: DbService<PlayerDto, Player>;

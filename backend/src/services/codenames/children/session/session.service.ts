@@ -6,7 +6,6 @@ import {DbService} from '../../../../utils/db';
 import {SessionDto} from './session.dto';
 import {THero} from '../../codenames';
 
-
 @Injectable()
 export class SessionService {
   private _dbService: DbService<SessionDto, Session>

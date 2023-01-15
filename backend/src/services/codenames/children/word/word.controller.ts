@@ -3,7 +3,6 @@ import {WordService} from './word.service';
 import {Word} from './word.model';
 import {WordDto} from './word.dto';
 
-
 @Controller()
 export class WordController {
   constructor(private readonly wordService: WordService) {}

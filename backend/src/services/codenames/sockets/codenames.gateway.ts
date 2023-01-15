@@ -2,19 +2,16 @@ import {ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSoc
 import {Server, Socket} from 'socket.io';
 import {EClientCommand, EServerCommand} from './commands';
 import {SessionService} from '../children/session/session.service';
-import {ERole} from '../children/role/role.enum';
-import {TAuthorizedSocket} from '../../../app';
+import type {TAuthorizedSocket} from '../../../app';
 import {UserService} from '../../user/user.service';
 import {PlayerService} from '../children/player/player.service';
 import {CodenamesGatewayService} from './codenames.gateway.service';
-import {CodenamesService} from '../codenames.service';
 import {WordDto} from '../children/word/word.dto';
 import {JwtAuthGuard} from '../../auth/jwt-auth-guard';
 import {UseGuards} from '@nestjs/common';
 import {AuthService} from '../../auth/auth.service';
 import {UserDto} from '../../user/user.dto';
 import {InitGameDto} from './dto/init-game-dto';
-
 
 @WebSocketGateway(7001, {
   cors: {
@@ -98,10 +95,6 @@ export class CodenamesGateway {
 
     delete initGameDto.currentPlayer;
 
-    // this.server
-    //   .to(room.toString())
-    //   .emit('initGame', initGameDto);
-
     this.server
       .to(room.toString())
       .emit('updateState', initGameDto);
@@ -124,10 +117,6 @@ export class CodenamesGateway {
     const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(socket.user);
 
     delete initGameDto.currentPlayer;
-
-    // this.server
-    //   .to(room.toString())
-    //   .emit('initGame', initGameDto);
 
     this.server
       .to(room.toString())

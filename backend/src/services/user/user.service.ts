@@ -1,19 +1,13 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException
-} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/sequelize';
 
 import {User} from './user.model';
 import {UserDto} from './user.dto';
 import {DbService} from '../../utils/db';
-import {TEditDto} from '../../app';
 
 @Injectable()
 export class UserService {
-  private _dbService: DbService<UserDto, User>
+  private _dbService: DbService<UserDto, User>;
 
   constructor(@InjectModel(User) private userModel: typeof User) {
     this._dbService = new DbService<UserDto, User>(this.userModel);

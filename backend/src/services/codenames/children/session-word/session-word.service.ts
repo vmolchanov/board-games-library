@@ -6,7 +6,6 @@ import {DbService} from '../../../../utils/db';
 import {SessionWordDto} from './session-word.dto';
 import {ISessionWordParams} from './session-word';
 
-
 @Injectable()
 export class SessionWordService {
   private _dbService: DbService<SessionWordDto, SessionWord>

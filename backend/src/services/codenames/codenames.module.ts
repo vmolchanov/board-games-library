@@ -12,7 +12,6 @@ import {SessionWordModule} from './children/session-word/session-word.module';
 import {CodenamesGatewayService} from './sockets/codenames.gateway.service';
 import {AuthModule} from '../auth/auth.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

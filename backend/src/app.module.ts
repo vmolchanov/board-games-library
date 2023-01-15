@@ -5,6 +5,10 @@ import {SequelizeModule} from '@nestjs/sequelize';
 import {AuthModule} from './services/auth/auth.module';
 import {UserModule} from './services/user/user.module';
 import {CodenamesModule} from './services/codenames/codenames.module';
+import {ChatModule} from './services/chat/chat.module';
+import {GameModule} from './services/game/game.module';
+import {ChatGameModule} from './services/chat-game/chat-game.module';
+import {ChatUserModule} from './services/chat-user/chat-user.module';
 import {AppRoutingModule} from './app-routing.module';
 
 @Module({
@@ -28,6 +32,10 @@ import {AppRoutingModule} from './app-routing.module';
     AuthModule,
     UserModule,
     CodenamesModule,
+    ChatModule,
+    GameModule,
+    ChatGameModule,
+    ChatUserModule,
   ],
   controllers: [],
   providers: [],

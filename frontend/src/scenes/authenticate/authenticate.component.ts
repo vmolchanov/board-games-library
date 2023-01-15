@@ -31,7 +31,6 @@ export default defineComponent({
           this.$router.push({name: 'Codenames'});
         }, 2000);
       });
-    console.log('гыгы')
   },
   data() {
     return {

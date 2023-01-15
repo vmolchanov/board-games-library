@@ -6,7 +6,6 @@ import {SessionService} from './session.service';
 import {SequelizeModule} from '@nestjs/sequelize';
 import {Session} from './session.model';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

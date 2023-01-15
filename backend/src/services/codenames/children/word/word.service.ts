@@ -5,7 +5,6 @@ import {Word} from './word.model';
 import {DbService} from '../../../../utils/db';
 import {WordDto} from './word.dto';
 
-
 @Injectable()
 export class WordService {
   private _dbService: DbService<WordDto, Word>;

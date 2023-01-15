@@ -3,7 +3,6 @@ import {SessionService} from './session.service';
 import {Session} from './session.model';
 import {SessionDto} from './session.dto';
 
-
 @Controller()
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
