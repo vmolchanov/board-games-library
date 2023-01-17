@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosHeaders} from 'axios';
 
 export const API_PORT = 7000;
 
@@ -14,7 +14,8 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(config => {
-  config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+  (config.headers as AxiosHeaders & {Authorization: string})
+    .Authorization = `Bearer ${localStorage.getItem('token')}`;
   return config;
 });
 
@@ -35,9 +36,7 @@ api.interceptors.response.use((config) => {
       localStorage.setItem('token', response.data.data);
       return api.request(originalRequest);
     } catch (e) {
-      // TODO: Редирект на страницу ошибки
       console.error('error');
-      // router.push({name: 'Home'});
     }
   }
   throw error;

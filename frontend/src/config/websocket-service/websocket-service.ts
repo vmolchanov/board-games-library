@@ -2,9 +2,9 @@ import io, {Socket} from 'socket.io-client';
 import {ManagerOptions} from 'socket.io-client/build/esm/manager';
 import {SocketOptions} from 'socket.io-client/build/esm/socket';
 import {AuthService} from '../../api/auth';
-import type {TWebSocketOptions, TWebSocketUrl} from './websocket-service.d';
+import type {TWebSocketOptions, TWebSocketUrl, IWebSocketService} from './websocket-service.d';
 
-export class WebsocketService {
+export class WebsocketService implements IWebSocketService {
   private _ws: Socket;
 
   private constructor(

@@ -1,7 +1,6 @@
 import type {TChat, TUser, ITelegramBot} from '@services/telegram-bot';
 import Chat from '../../models/chat';
 import ChatUser from '../../models/chat-user';
-// import fetch from 'node-fetch';
 import axios from 'axios';
 import User from '../../models/user';
 import ChatGame from '../../models/chat-game';
@@ -53,11 +52,7 @@ export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, da
   for (let i = 0; i < chatUsers.length; i++) {
     const chatUser = chatUsers[i];
 
-    console.log('chatUser', chatUser)
-
     const user = (await User.findByPk(chatUser.userId)).dataValues;
-
-    console.log('user', user)
 
     try {
       const response = await axios('http://localhost:7000/auth/generate-login-link', {

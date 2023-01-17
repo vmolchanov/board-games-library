@@ -1,6 +1,6 @@
 import {ConflictException, NotFoundException} from '@nestjs/common';
 import type {TEditDto} from '../app';
-import {Model} from 'sequelize-typescript';
+import {Model, ModelCtor, Sequelize} from 'sequelize-typescript';
 
 export class DbService<DtoType, ModelType extends Model> {
   private _model: any;
@@ -14,7 +14,7 @@ export class DbService<DtoType, ModelType extends Model> {
   }
 
   async getAllEntities(): Promise<ModelType[]> {
-    return await this._model.findAll();
+    return (await this._model.findAll()).map(entity => entity.dataValues);
   }
 
   /**
@@ -34,7 +34,7 @@ export class DbService<DtoType, ModelType extends Model> {
         throw new ConflictException('Такой объект уже существует');
       }
     }
-    return this._model.create(dto);
+    return (await this._model.create(dto)).dataValues;
   }
 
   async updateEntity(dto: TEditDto<DtoType>): Promise<ModelType> {
@@ -44,7 +44,7 @@ export class DbService<DtoType, ModelType extends Model> {
       throw new NotFoundException('Объекта не существует');
     }
 
-    return candidate.update(dto);
+    return (await candidate.update(dto)).dataValues;
   }
 
   async deleteEntity(id: number | string): Promise<void> {
@@ -70,5 +70,20 @@ export class DbService<DtoType, ModelType extends Model> {
       where,
       rejectOnEmpty: false,
     })).map(obj => obj.dataValues);
+  }
+
+  static async createMemoryDatabase(models: ModelCtor[]): Promise<Sequelize> {
+    const memoryDatabase = new Sequelize({
+      dialect: 'postgres',
+      storage: ':memory:',
+      logging: false,
+      username: 'postgres',
+      password: 'postgres',
+    });
+    memoryDatabase.addModels(models);
+
+    await memoryDatabase.sync();
+
+    return memoryDatabase;
   }
 }
