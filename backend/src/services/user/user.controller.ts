@@ -5,15 +5,13 @@ import {
   Put,
   Delete,
   Param,
-  Body,
-  UseGuards
+  Body
 } from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 
 import {UserService} from './user.service';
 import {UserDto} from './user.dto';
 import {User} from './user.model';
-import {JwtAuthGuard} from '../auth/jwt-auth-guard';
 
 @ApiTags('user')
 @Controller('user')
@@ -21,13 +19,11 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  // @UseGuards(JwtAuthGuard)
   async getAllUsers(): Promise<User[]> {
     return await this.userService.getAllUsers();
   }
 
   @Get(':userId')
-  @UseGuards(JwtAuthGuard)
   async getUserById(@Param('userId') userId): Promise<User> {
     return await this.userService.getUserById(userId);
   }
@@ -43,13 +39,11 @@ export class UserController {
   }
 
   @Put()
-  @UseGuards(JwtAuthGuard)
   async editUser(@Body() userDto: UserDto): Promise<User> {
     return await this.userService.editUser(userDto);
   }
 
   @Delete()
-  @UseGuards(JwtAuthGuard)
   async deleteUser(@Body('id') userid: string): Promise<void> {
     return await this.userService.deleteUser(userid);
   }

@@ -6,10 +6,8 @@ import {
   Get,
   Param,
   Post,
-  Put,
-  UseGuards
+  Put
 } from '@nestjs/common';
-import {JwtAuthGuard} from '../auth/jwt-auth-guard';
 import {ChatGameService} from './chat-game.service';
 import {ChatGame} from './chat-game.model';
 import {ChatGameDto} from './chat-game.dto';
@@ -20,13 +18,11 @@ export class ChatGameController {
   constructor(private readonly chatGameService: ChatGameService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   async getAllChatGames(): Promise<ChatGame[]> {
     return await this.chatGameService.getAllChatGames();
   }
 
   @Get(':chatGameId')
-  @UseGuards(JwtAuthGuard)
   async getChatGameById(@Param('chatGameId') chatGameId): Promise<ChatGame> {
     return await this.chatGameService.getChatGameById(chatGameId);
   }
@@ -42,13 +38,11 @@ export class ChatGameController {
   }
 
   @Put()
-  @UseGuards(JwtAuthGuard)
   async editChatGame(@Body() chatGameDto: ChatGameDto): Promise<ChatGame> {
     return await this.chatGameService.editChatGame(chatGameDto);
   }
 
   @Delete()
-  @UseGuards(JwtAuthGuard)
   async deleteChatGame(@Body('id') chatGameId: string): Promise<void> {
     return await this.chatGameService.deleteChatGame(chatGameId);
   }

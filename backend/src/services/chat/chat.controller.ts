@@ -1,7 +1,6 @@
 import {ApiTags} from '@nestjs/swagger';
-import {Body, Controller, Delete, Get, Param, Post, Put, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import {ChatService} from './chat.service';
-import {JwtAuthGuard} from '../auth/jwt-auth-guard';
 import {Chat} from './chat.model';
 import {ChatDto} from './chat.dto';
 
@@ -11,13 +10,11 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   async getAllChats(): Promise<Chat[]> {
     return await this.chatService.getAllChats();
   }
 
   @Get(':chatId')
-  @UseGuards(JwtAuthGuard)
   async getChatById(@Param('chatId') chatId): Promise<Chat> {
     return await this.chatService.getChatById(chatId);
   }
@@ -33,13 +30,11 @@ export class ChatController {
   }
 
   @Put()
-  @UseGuards(JwtAuthGuard)
   async editChat(@Body() chatDto: ChatDto): Promise<Chat> {
     return await this.chatService.editChat(chatDto);
   }
 
   @Delete()
-  @UseGuards(JwtAuthGuard)
   async deleteChat(@Body('id') chatId: string): Promise<void> {
     return await this.chatService.deleteChat(chatId);
   }
