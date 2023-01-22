@@ -122,4 +122,20 @@ export class CodenamesGateway {
       .to(room.toString())
       .emit('updateState', initGameDto);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @SubscribeMessage(EClientCommand.GET_KEY)
+  async getKey(@ConnectedSocket() socket: TAuthorizedSocket): Promise<string> {
+    const room: number | undefined = Number(Array.from(socket.rooms)[1]);
+
+    if (!room) {
+      return;
+    }
+
+    const key = await this.codenamesGatewayService.getKey(room);
+
+    console.log('key', key);
+
+    return key;
+  }
 }

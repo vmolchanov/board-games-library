@@ -11,4 +11,5 @@ export enum EClientCommand {
   REQUEST_ROOM_INFO = 'REQUEST_ROOM_INFO',
   MAKE_MOVE = 'MAKE_MOVE',
   MAKE_TIP = 'MAKE_TIP',
+  GET_KEY = 'GET_KEY',
 }
