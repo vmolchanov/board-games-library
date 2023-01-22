@@ -1,5 +1,7 @@
 import {defineComponent} from 'vue';
 
+import CodenamesInput from '../codenames-input/codenames-input.vue';
+
 export default defineComponent({
   name: 'tip-form',
   props: {
@@ -8,12 +10,16 @@ export default defineComponent({
       required: true,
     },
   },
+  components: {
+    CodenamesInput,
+  },
   data() {
     return {
       tip: '',
       count: 0,
     };
   },
+  emits: ['submit'],
   methods: {
     onFormSubmit() {
       if (this.validate()) {

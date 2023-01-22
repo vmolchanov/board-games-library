@@ -1,9 +1,6 @@
-export declare enum ERole {
-  RED_CAPTAIN = "RED_CAPTAIN",
-  BLUE_CAPTAIN = "BLUE_CAPTAIN",
-  RED_AGENT = "RED_AGENT",
-  BLUE_AGENT = "BLUE_AGENT"
-}
+import {EState, ERole} from './enums';
+
+export type TCurrentPlayer = IUser & {role: ERole};
 
 export interface IUser {
   id?: number;
@@ -18,25 +15,17 @@ export interface IWord {
   value?: string;
 }
 
-export type TWordState = 'NOT_OPENED' | 'BLUE_AGENT' | 'RED_AGENT' | 'NEUTRAL' | 'KILLER';
-
 export interface IFieldState {
-  readonly word: IWord;
-
-  readonly state: TWordState;
-
-  readonly position: number;
+  word: IWord;
+  state: EState;
+  position: number;
 }
 
 export interface ICodenamesState {
-  currentPlayer: IUser & {role: ERole};
-
+  currentPlayer: TCurrentPlayer;
   fieldState: IFieldState[];
-
   move: ERole;
-
   tip: string;
-
   sessionId: number;
 }
 

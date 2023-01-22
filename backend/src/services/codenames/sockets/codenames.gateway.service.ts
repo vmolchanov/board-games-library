@@ -27,6 +27,11 @@ export class CodenamesGatewayService {
     private readonly sessionWordService: SessionWordService,
   ) {}
 
+  async getKey(sessionId: number): Promise<string> {
+    const session = await this.sessionService.getSessionById(sessionId);
+    return session.key;
+  }
+
   async isValidSession(sessionId: number): Promise<boolean> {
     const session = await this.sessionService.getSessionById(sessionId);
     return session !== null;
