@@ -13,8 +13,15 @@ export default defineComponent({
   components: {
     CodenamesInput,
   },
+  mounted() {
+    this.tipInput = this.$refs.tipInputRef.$el.querySelector('input');
+    this.countInput = this.$refs.countInputRef.$el.querySelector('input');
+  },
   data() {
     return {
+      tipInput: null as HTMLInputElement | null,
+      countInput: null as HTMLInputElement | null,
+
       tip: '',
       count: 0,
     };
@@ -40,17 +47,17 @@ export default defineComponent({
       const isValidCount = this.count > 0 && this.count <= this.countOfNotOpenedWords;
 
       if (!isValidTip) {
-        this.$refs.tipInputRef.setCustomValidity('Подсказка должна состоять из одного слова');
+        this.tipInput!.setCustomValidity('Подсказка должна состоять из одного слова');
       }
 
       if (!isValidCount) {
-        this.$refs.countInputRef.setCustomValidity(
+        this.countInput!.setCustomValidity(
           'Должно быть указано хотя бы одно слово, но не более, чем количество не открытых'
         );
       }
 
-      this.$refs.tipInputRef.reportValidity();
-      this.$refs.countInputRef.reportValidity();
+      this.tipInput!.reportValidity();
+      this.countInput!.reportValidity();
 
       return isValidTip && isValidCount;
     },
@@ -58,12 +65,12 @@ export default defineComponent({
 
   watch: {
     tip() {
-      this.$refs.tipInputRef.setCustomValidity('');
-      this.$refs.tipInputRef.reportValidity();
+      this.tipInput!.setCustomValidity('');
+      this.tipInput!.reportValidity();
     },
     count() {
-      this.$refs.countInputRef.setCustomValidity('');
-      this.$refs.countInputRef.reportValidity();
+      this.countInput!.setCustomValidity('');
+      this.countInput!.reportValidity();
     },
   },
 });

@@ -6,8 +6,8 @@
       ref="tipInputRef"
       class="codenames-input__input"
       :type="type"
-      :value="value"
-      @input="onInput"
+      :value="modelValue"
+      @input="onInput($event)"
     >
   </div>
 </template>
