@@ -12,20 +12,27 @@ export default defineComponent({
       type: String,
       default: 'text',
     },
-    value: {
-      type: String,
+    modelValue: {
+      type: [String, Number],
       default: '',
     },
   },
-  emits: ['input'],
+  emits: ['update:modelValue'],
   data() {
     return {
       id: uuidv4(),
     };
   },
   methods: {
-    onInput(value: string) {
-      this.$emit('input', value);
+    onInput(e: Event) {
+      console.log('input')
+      switch (this.type) {
+        case 'number':
+          this.$emit('update:modelValue', Number((e.target as HTMLInputElement).value));
+          break;
+        default:
+          this.$emit('update:modelValue', (e.target as HTMLInputElement).value.toString());
+      }
     },
   },
 });
