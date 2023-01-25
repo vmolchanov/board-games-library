@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/main.ts"
+    "start": "NODE_ENV=development nodemon src/main.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "1.2.2",
+    "dotenv": "16.0.3",
     "module-alias": "2.2.2",
     "node-fetch": "3.3.0",
     "node-telegram-bot-api": "0.59.0",
@@ -26,6 +27,7 @@
   },
   "_moduleAliases": {
     "@controllers": "src/controllers",
-    "@services": "src/services"
+    "@services": "src/services",
+    "@models": "src/models"
   }
 }

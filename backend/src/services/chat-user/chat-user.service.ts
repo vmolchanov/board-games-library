@@ -20,6 +20,10 @@ export class ChatUserService {
     return await this._dbService.getAllEntities();
   }
 
+  async getChatUserByParams(params: Record<string, string | number | boolean>): Promise<ChatUser[]> {
+    return await this._dbService.find(params);
+  }
+
   async createChatUser(chatUserDto: ChatUserDto): Promise<ChatUser> {
     return await this._dbService.createEntity(chatUserDto, {
       chatId: chatUserDto.chatId,
@@ -48,5 +52,10 @@ export class ChatUserService {
 
   async deleteChatUser(id: string): Promise<void> {
     await this._dbService.deleteEntity(id);
+  }
+
+  async deleteChatUsers(ids: number[]): Promise<void> {
+    const queries: Promise<void>[] = ids.map((id: number) => this._dbService.deleteEntity(id));
+    await Promise.all(queries);
   }
 }

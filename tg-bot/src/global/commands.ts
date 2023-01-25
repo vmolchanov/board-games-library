@@ -1,4 +1,4 @@
-import {TelegramBot} from './services/telegram-bot';
+import {TelegramBot} from '@services/telegram-bot';
 import {startController} from '@controllers/start';
 import {addPlayerController} from '@controllers/add-player';
 import {resetController} from '@controllers/reset';

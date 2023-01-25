@@ -16,6 +16,10 @@ export class ChatService {
     return await this._dbService.getEntityById(id);
   }
 
+  async getChatByParams(params: Record<string, string | number | boolean>): Promise<Chat[]> {
+    return await this._dbService.find(params);
+  }
+
   async getAllChats(): Promise<Chat[]> {
     return await this._dbService.getAllEntities();
   }

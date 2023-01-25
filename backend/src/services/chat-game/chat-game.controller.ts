@@ -6,14 +6,14 @@ import {
   Get,
   Param,
   Post,
-  Put
+  Put, Query
 } from '@nestjs/common';
 import {ChatGameService} from './chat-game.service';
 import {ChatGame} from './chat-game.model';
 import {ChatGameDto} from './chat-game.dto';
 
 @ApiTags('chatGame')
-@Controller('chatGame')
+@Controller('chat-game')
 export class ChatGameController {
   constructor(private readonly chatGameService: ChatGameService) {}
 
@@ -22,8 +22,13 @@ export class ChatGameController {
     return await this.chatGameService.getAllChatGames();
   }
 
+  @Get('/params')
+  async getChatGameByParams(@Query() data: Record<string, string | number | boolean>): Promise<ChatGame[]> {
+    return await this.chatGameService.getChatGameByParams(data);
+  }
+
   @Get(':chatGameId')
-  async getChatGameById(@Param('chatGameId') chatGameId): Promise<ChatGame> {
+  async getChatGameById(@Param('chatGameId') chatGameId: number): Promise<ChatGame> {
     return await this.chatGameService.getChatGameById(chatGameId);
   }
 
@@ -43,7 +48,12 @@ export class ChatGameController {
   }
 
   @Delete()
-  async deleteChatGame(@Body('id') chatGameId: string): Promise<void> {
+  async deleteChatGame(@Body('id') chatGameId: number): Promise<void> {
     return await this.chatGameService.deleteChatGame(chatGameId);
+  }
+
+  @Delete('/list')
+  async deleteChatGames(@Body('ids') ids: number[]): Promise<void> {
+    await this.chatGameService.deleteChatGames(ids);
   }
 }

@@ -1,11 +1,9 @@
-import db from '../db';
-import {DataTypes} from 'sequelize';
+export class GameDto {
+  readonly id?: number;
 
-const Game = db.define('game', {
-  id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
-  title: {type: DataTypes.STRING},
-  minPlayers: {type: DataTypes.INTEGER},
-  maxPlayers: {type: DataTypes.INTEGER},
-})
+  readonly title: string;
 
-export default Game;
+  readonly minPlayers: number;
+
+  readonly maxPlayers: number;
+}

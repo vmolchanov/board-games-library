@@ -1,39 +1,31 @@
-import type {ITelegramBot, TChat, TUser} from '@services/telegram-bot';
-import Game from '../../models/game';
-import {Model} from 'sequelize';
 import * as NodeTelegramBotApi from 'node-telegram-bot-api';
-import Chat from '../../models/chat';
-import ChatGame from '../../models/chat-game';
+
+import type {ITelegramBot, TChat, TUser} from '@services/telegram-bot';
+
+import {HttpService} from '@services/http-service/http-service';
+import {EHttpServiceEndpoint} from '@services/http-service/http-service.constant';
+import {ChatDto, ChatGameDto, GameDto} from '@models';
 
 export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, date: Date) => {
-  const chatFromDb = await Chat.findOne({
-    where: {
-      chatId: chat.id,
-    },
-    rejectOnEmpty: false,
-  });
-  if (chatFromDb === null) {
-    await Chat.create({chatId: chat.id});
+  const chatService = new HttpService<ChatDto>(EHttpServiceEndpoint.CHAT);
+  const chatGameService = new HttpService<ChatGameDto>(EHttpServiceEndpoint.CHAT_GAME);
+  const gameService = new HttpService<GameDto>(EHttpServiceEndpoint.GAME);
+
+  const [chatFromDb]: ChatDto[] = await chatService.findByParams({chatId: chat.id});
+  if (chatFromDb === undefined) {
+    await chatService.create({chatId: chat.id});
   }
 
-  const chatGame = await ChatGame.findOne({
-    where: {
-      chatId: chat.id,
-    },
-    rejectOnEmpty: false,
-  });
-  if (chatGame !== null) {
-    const game: any = await Game.findOne({
-      where: {
-        id: (chatGame as Model).dataValues.gameId,
-      },
-      rejectOnEmpty: false,
+  const [chatGame]: ChatGameDto[] = await chatGameService.findByParams({chatId: chatFromDb.id});
+  if (chatGame !== undefined) {
+    const [game]: GameDto[] = await gameService.findByParams({
+      id: chatGame.gameId,
     });
     await bot.sendMessage(chat.id, `Вы уже хотите поиграть в ${game.title}`);
     return;
   }
 
-  const games = (await Game.findAll()).map((game: Model) => game.dataValues);
+  const games: GameDto[] = await gameService.findAll();
 
   const keyboard = {
     reply_markup: JSON.stringify({
@@ -50,14 +42,11 @@ export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, da
   bot.once('callback_query', async (message: NodeTelegramBotApi.CallbackQuery) => {
     const data: any = JSON.parse(message.data);
     const chatId = message.message.chat.id;
-    const game: any = (await Game.findByPk(data.payload) as Model).dataValues;
+    const game: GameDto = await gameService.findById(data.payload);
 
-    const chat = (await Chat.findOne({
-      where: {chatId},
-      rejectOnEmpty: false,
-    })).dataValues;
+    const [chat]: ChatDto[] = await chatService.findByParams({chatId});
 
-    await ChatGame.create({
+    await chatGameService.create({
       chatId: chat.id,
       gameId: data.payload,
     });

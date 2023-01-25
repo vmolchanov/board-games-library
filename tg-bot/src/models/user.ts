@@ -1,12 +1,11 @@
-import db from '../db';
-import {DataTypes} from 'sequelize';
+export class UserDto {
+  readonly id?: number;
 
-const User = db.define('user', {
-  id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
-  telegramId: {type: DataTypes.STRING, unique: true},
-  lastName: {type: DataTypes.STRING},
-  firstName: {type: DataTypes.STRING},
-  nickName: {type: DataTypes.STRING},
-})
+  readonly telegramId: string;
 
-export default User;
+  readonly firstName: string;
+
+  readonly lastName: string;
+
+  readonly userName: string;
+}

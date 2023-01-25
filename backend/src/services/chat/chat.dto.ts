@@ -3,6 +3,6 @@ import {IsNumber} from 'class-validator';
 export class ChatDto {
   readonly id?: number;
 
-  @IsNumber()
+  // @IsNumber()
   readonly chatId: number;
 }

@@ -13,7 +13,7 @@ export class UserService {
     this._dbService = new DbService<UserDto, User>(this.userModel);
   }
 
-  async getUserById(id: string): Promise<User> {
+  async getUserById(id: number): Promise<User> {
     return await this._dbService.getEntityById(id);
   }
 
@@ -21,7 +21,11 @@ export class UserService {
     return await this._dbService.findOne({telegramId});
   }
 
-  async isUserExist(id: string): Promise<boolean> {
+  async getUserByParams(params: Record<string, string | number | boolean>): Promise<User[]> {
+    return await this._dbService.find(params);
+  }
+
+  async isUserExist(id: number): Promise<boolean> {
     const user = await this.getUserById(id);
     return user !== null;
   }

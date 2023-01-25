@@ -20,6 +20,10 @@ export class ChatGameService {
     return await this._dbService.getAllEntities();
   }
 
+  async getChatGameByParams(params: Record<string, string | number | boolean>): Promise<ChatGame[]> {
+    return await this._dbService.find(params);
+  }
+
   async createChatGame(chatGameDto: ChatGameDto): Promise<ChatGame> {
     return await this._dbService.createEntity(chatGameDto, {
       chatId: chatGameDto.chatId,
@@ -46,7 +50,12 @@ export class ChatGameService {
     return await this._dbService.updateEntity(chatGameDto);
   }
 
-  async deleteChatGame(id: string): Promise<void> {
+  async deleteChatGame(id: number): Promise<void> {
     await this._dbService.deleteEntity(id);
+  }
+
+  async deleteChatGames(ids: number[]): Promise<void> {
+    const queries: Promise<void>[] = ids.map((id: number) => this._dbService.deleteEntity(id));
+    await Promise.all(queries);
   }
 }

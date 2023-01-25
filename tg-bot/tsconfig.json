@@ -3,13 +3,21 @@
     "baseUrl": "./src",
     "paths": {
       "@controllers/*": ["controllers/*"],
-      "@services/*": ["services/*"]
+      "@services/*": ["services/*"],
+      "@models": ["models"],
+      "@models/*": ["models/*"]
     },
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.promise"
+    ]
   },
   "include": [
     "src/**/*"

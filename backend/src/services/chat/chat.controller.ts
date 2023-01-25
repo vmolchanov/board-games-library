@@ -1,5 +1,5 @@
 import {ApiTags} from '@nestjs/swagger';
-import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Query} from '@nestjs/common';
 import {ChatService} from './chat.service';
 import {Chat} from './chat.model';
 import {ChatDto} from './chat.dto';
@@ -14,8 +14,14 @@ export class ChatController {
     return await this.chatService.getAllChats();
   }
 
+  @Get('/params')
+  async getChatByParams(@Query() data: Record<string, string | number | boolean>): Promise<Chat[]> {
+    console.log('here')
+    return await this.chatService.getChatByParams(data);
+  }
+
   @Get(':chatId')
-  async getChatById(@Param('chatId') chatId): Promise<Chat> {
+  async getChatById(@Param('chatId') chatId: number): Promise<Chat> {
     return await this.chatService.getChatById(chatId);
   }
 

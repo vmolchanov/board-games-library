@@ -1,10 +1,7 @@
-import db from '../db';
-import {DataTypes} from 'sequelize';
+export class ChatUserDto {
+  readonly id?: number;
 
-const ChatUser = db.define('chatUser', {
-  id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
-  chatId: {type: DataTypes.INTEGER},
-  userId: {type: DataTypes.INTEGER},
-})
+  readonly userId: number;
 
-export default ChatUser;
+  readonly chatId: number;
+}

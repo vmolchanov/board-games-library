@@ -6,7 +6,7 @@ import {
   Get,
   Param,
   Post,
-  Put
+  Put, Query
 } from '@nestjs/common';
 import {GameService} from './game.service';
 import {Game} from './game.model';
@@ -22,8 +22,13 @@ export class GameController {
     return await this.gameService.getAllGames();
   }
 
+  @Get('/params')
+  async getGameByParams(@Query() data: Record<string, string | number | boolean>): Promise<Game[]> {
+    return await this.gameService.getGameByParams(data);
+  }
+
   @Get(':gameId')
-  async getGameById(@Param('gameId') gameId): Promise<Game> {
+  async getGameById(@Param('gameId') gameId: number): Promise<Game> {
     return await this.gameService.getGameById(gameId);
   }
 

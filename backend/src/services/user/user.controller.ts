@@ -5,7 +5,7 @@ import {
   Put,
   Delete,
   Param,
-  Body
+  Body, Query
 } from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 
@@ -23,8 +23,13 @@ export class UserController {
     return await this.userService.getAllUsers();
   }
 
+  @Get('/params')
+  async getUserByParams(@Query() data: Record<string, string | number | boolean>): Promise<User[]> {
+    return await this.userService.getUserByParams(data);
+  }
+
   @Get(':userId')
-  async getUserById(@Param('userId') userId): Promise<User> {
+  async getUserById(@Param('userId') userId: number): Promise<User> {
     return await this.userService.getUserById(userId);
   }
 

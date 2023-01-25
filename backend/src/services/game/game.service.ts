@@ -20,6 +20,10 @@ export class GameService {
     return await this._dbService.getAllEntities();
   }
 
+  async getGameByParams(params: Record<string, string | number | boolean>): Promise<Game[]> {
+    return await this._dbService.find(params);
+  }
+
   async createGame(gameDto: GameDto): Promise<Game> {
     return await this._dbService.createEntity(gameDto, {title: gameDto.title});
   }

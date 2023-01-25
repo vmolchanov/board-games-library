@@ -1,18 +1,20 @@
-import type {TChat, TUser, ITelegramBot} from '@services/telegram-bot';
-import ChatGame from '../../models/chat-game';
 import * as NodeTelegramBotApi from 'node-telegram-bot-api';
-import ChatUser from '../../models/chat-user';
-import Chat from '../../models/chat';
-import User from '../../models/user';
-import axios from 'axios';
+
+import type {ITelegramBot, TChat, TUser} from '@services/telegram-bot';
+
+import {HttpService} from '@services/http-service/http-service';
+import {EHttpServiceEndpoint} from '@services/http-service/http-service.constant';
+import {ChatDto, ChatGameDto, ChatUserDto, UserDto} from '@models';
 
 export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, date: Date) => {
-  const chatFromDb = (await Chat.findOne({
-    where: {
-      chatId: chat.id,
-    },
-    rejectOnEmpty: false,
-  }))?.dataValues;
+  const chatService = new HttpService<ChatDto>(EHttpServiceEndpoint.CHAT);
+  const chatGameService = new HttpService<ChatGameDto>(EHttpServiceEndpoint.CHAT_GAME);
+  const chatUserService = new HttpService<ChatUserDto>(EHttpServiceEndpoint.CHAT_USER);
+  const userService = new HttpService<UserDto>(EHttpServiceEndpoint.USER);
+
+  const [chatFromDb]: ChatDto[] = await chatService.findByParams({
+    chatId: chat.id,
+  });
 
   if (!chatFromDb) {
     await bot.sendMessage(
@@ -21,11 +23,9 @@ export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, da
     );
     return;
   }
-  const chatGame = await ChatGame.findOne({
-    where: {
-      chatId: chatFromDb.id,
-    },
-    rejectOnEmpty: false,
+
+  const [chatGame]: ChatGameDto[] = await chatGameService.findByParams({
+    chatId: chatFromDb.id,
   });
 
   if (!chatGame) {
@@ -50,48 +50,31 @@ export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, da
       first_name: firstName,
       last_name: lastName,
       id: userId,
-      username: nickName,
+      username: userName,
     } = message.from;
     const chatId = message.message.chat.id;
-    const chatUser = await ChatUser.findOne({
-      where: {userId},
-      rejectOnEmpty: false,
+
+    const [chatUser]: ChatUserDto[] = await chatUserService.findByParams({
+      userId,
     });
 
-    let user = (await User.findOne({
-      where: {
-        telegramId: userId.toString(),
-      },
-      rejectOnEmpty: false,
-    }))?.dataValues;
+    let [user]: UserDto[] = await userService.findByParams({
+      telegramId: userId.toString(),
+    });
 
     if (!user) {
-      user = await User.create({
+      user = await userService.create({
         firstName,
         lastName,
-        nickName,
+        userName,
         telegramId: userId.toString(),
       });
-      try {
-        await axios('http://localhost:7000/user', {
-          method: 'POST',
-          data: {
-            firstName,
-            lastName,
-            userName: nickName,
-            telegramId: userId.toString(),
-          },
-        })
-      } catch {}
     }
 
-    if (chatUser === null) {
-      const chat = (await Chat.findOne({
-        where: {chatId},
-        rejectOnEmpty: false,
-      })).dataValues;
+    if (chatUser === undefined) {
+      const [chat]: ChatDto[] = await chatService.findByParams({chatId});
 
-      await ChatUser.create({chatId: chat.id, userId: user.id});
+      await chatUserService.create({chatId: chat.id, userId: user.id});
     }
 
     await bot.sendMessage(chatId, `Ура! ${firstName} ${lastName} в игре!`);
