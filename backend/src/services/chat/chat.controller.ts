@@ -16,7 +16,6 @@ export class ChatController {
 
   @Get('/params')
   async getChatByParams(@Query() data: Record<string, string | number | boolean>): Promise<Chat[]> {
-    console.log('here')
     return await this.chatService.getChatByParams(data);
   }
 

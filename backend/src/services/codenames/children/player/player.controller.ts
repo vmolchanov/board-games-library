@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Put, Delete, Body, Param} from '@nestjs/common';
+import {Controller, Get, Post, Put, Delete, Body, Param, Query} from '@nestjs/common';
 import {PlayerService} from './player.service';
 import {Player} from './player.model';
 import {PlayerDto} from './player.dto';
@@ -10,6 +10,11 @@ export class PlayerController {
   @Get()
   async getAllPlayers(): Promise<Player[]> {
     return await this.playerService.getAllPlayers();
+  }
+
+  @Get('/params')
+  async getPlayersByParams(@Query() data: Record<string, string | number | boolean>): Promise<Player[]> {
+    return await this.playerService.getPlayersByParams(data);
   }
 
   @Get(':id')
@@ -30,5 +35,10 @@ export class PlayerController {
   @Delete()
   async deletePlayer(@Body('id') id: number): Promise<void> {
     await this.playerService.deletePlayer(id);
+  }
+
+  @Delete('/list')
+  async deletePlayers(@Body('ids') ids: number[]): Promise<void> {
+    await this.playerService.deletePlayers(ids);
   }
 }

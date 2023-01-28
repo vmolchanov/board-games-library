@@ -81,7 +81,8 @@ export class CodenamesGateway {
   @SubscribeMessage(EClientCommand.MAKE_TIP)
   async makeTip(
     @ConnectedSocket() socket: TAuthorizedSocket,
-    @MessageBody('tip') tip: string
+    @MessageBody('tip') tip: string,
+    @MessageBody('count') count: number,
   ): Promise<void> {
     const room: number | undefined = Number(Array.from(socket.rooms)[1]);
 

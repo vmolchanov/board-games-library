@@ -2,7 +2,7 @@ import {BadRequestException, ConflictException, Injectable} from '@nestjs/common
 import {UserDto} from '../user/user.dto';
 import {ERole} from './children/role/role.enum';
 
-import {ArrayHelpers} from '../../utils/array-helpers';
+import type {THero} from './codenames';
 
 import {SessionService} from './children/session/session.service';
 import {UserService} from '../user/user.service';
@@ -12,8 +12,8 @@ import {SessionWordService} from './children/session-word/session-word.service';
 
 import {User} from '../user/user.model';
 import {Word} from './children/word/word.model';
+import {Session} from './children/session/session.model';
 
-import type {THero} from './codenames';
 import {
   AGENTS_COUNT,
   EHeroCharacter,
@@ -24,7 +24,7 @@ import {
   NEUTRAL_COUNT,
   TOTAL_HEROES
 } from './codenames.constant';
-import {Session} from './children/session/session.model';
+import {ArrayHelpers} from '../../utils/array-helpers';
 import {NumberHelpers} from '../../utils/number-helpers';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class CodenamesService {
     private readonly sessionWordService: SessionWordService,
   ) {}
 
-  async initializeGame(telegramUsers: UserDto[], chatId: string): Promise<void> {
+  async initializeGame(telegramUsers: UserDto[], chatId: number): Promise<void> {
     const session: Session = await this.initializeSession(chatId);
 
     const users = ArrayHelpers.shuffle(await this.getUsers(telegramUsers));
@@ -47,7 +47,7 @@ export class CodenamesService {
     await this.initializeWords(words, session);
   }
 
-  async initializeSession(chatId: string): Promise<Session> {
+  async initializeSession(chatId: number): Promise<Session> {
     const key = this.generateKey();
     const start = key[0];
     const move = start === EHeroCharacter.RED_AGENT ? ERole.RED_CAPTAIN : ERole.BLUE_CAPTAIN;

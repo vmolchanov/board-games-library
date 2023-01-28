@@ -105,7 +105,8 @@ export default defineComponent({
     onTipFormSubmit(obj: ITipFormSubmit): void {
       if (this.isMeCaptain && 'tip' in obj && 'count' in obj) {
         this.ws.emit(EWsClientEvent.MAKE_TIP, {
-          tip: `${obj.tip}, ${obj.count}`,
+          tip: obj.tip,
+          count: obj.count,
         });
       }
     },

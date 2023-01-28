@@ -11,5 +11,7 @@ export class InitGameDto {
 
   tip: string;
 
+  count: number;
+
   sessionId: number;
 }

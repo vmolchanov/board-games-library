@@ -3,6 +3,7 @@ import type {ITelegramBot, TChat, TUser} from '@services/telegram-bot';
 import {HttpService} from '@services/http-service/http-service';
 import {EHttpServiceEndpoint} from '@services/http-service/http-service.constant';
 import {ChatDto, ChatGameDto, ChatUserDto, GameDto, UserDto} from '@models';
+import {ICodenamesInitGame} from '../../types/codenames';
 
 export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, date: Date) => {
   const chatService = new HttpService<ChatDto>(EHttpServiceEndpoint.CHAT);
@@ -11,6 +12,7 @@ export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, da
   const gameService = new HttpService<GameDto>(EHttpServiceEndpoint.GAME);
   const userService = new HttpService<UserDto>(EHttpServiceEndpoint.USER);
   const authService = new HttpService(EHttpServiceEndpoint.GENERATE_AUTH_LINK);
+  const codenamesService = new HttpService(EHttpServiceEndpoint.CODENAMES);
 
   const [chatFromDb]: ChatDto[] = await chatService.findByParams({chatId: chat.id});
 
@@ -44,6 +46,11 @@ export const controller = async (bot: ITelegramBot, user: TUser, chat: TChat, da
     await bot.sendMessage(chat.id, 'Недостаточно игроков :(');
     return;
   }
+
+  await codenamesService.initGame<ICodenamesInitGame>({
+    players: [],
+    chatId: chatFromDb.id,
+  });
 
   for (let i = 0; i < chatUsers.length; i++) {
     const chatUser = chatUsers[i];

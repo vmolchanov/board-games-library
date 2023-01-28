@@ -18,6 +18,10 @@ export class SessionService {
     return await this._dbService.getAllEntities();
   }
 
+  async getSessionByParams(params: Record<string, string | number | boolean>): Promise<Session[]> {
+    return await this._dbService.find(params);
+  }
+
   async getSessionById(id: number): Promise<Session> {
     return await this._dbService.getEntityById(id);
   }

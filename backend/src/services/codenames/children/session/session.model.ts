@@ -16,4 +16,8 @@ export class Session extends Model<Session> {
   @AllowNull
   @Column
   tip: string;
+
+  @AllowNull
+  @Column
+  count: number;
 }

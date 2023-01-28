@@ -17,6 +17,10 @@ export class PlayerService {
     return await this._dbService.getAllEntities();
   }
 
+  async getPlayersByParams(params: Record<string, string | number | boolean>): Promise<Player[]> {
+    return await this._dbService.find(params);
+  }
+
   async getPlayerById(id: number): Promise<Player> {
     return await this._dbService.getEntityById(id);
   }
@@ -35,5 +39,10 @@ export class PlayerService {
 
   async deletePlayer(id: number): Promise<void> {
     return await this._dbService.deleteEntity(id);
+  }
+
+  async deletePlayers(ids: number[]): Promise<void> {
+    const queries: Promise<void>[] = ids.map((id: number) => this._dbService.deleteEntity(id));
+    await Promise.all(queries);
   }
 }

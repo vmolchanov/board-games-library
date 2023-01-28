@@ -1,21 +1,26 @@
+import {Injectable} from '@nestjs/common';
+
+import type {THero} from '../codenames';
+import type {TWordState} from '../codenames';
+
 import {SessionService} from '../children/session/session.service';
 import {UserService} from '../../user/user.service';
 import {PlayerService} from '../children/player/player.service';
-import {ERole} from '../children/role/role.enum';
+import {SessionWordService} from '../children/session-word/session-word.service';
+import {WordService} from '../children/word/word.service';
+
 import {User} from '../../user/user.model';
 import {Session} from '../children/session/session.model';
 import {Player} from '../children/player/player.model';
-import {Injectable} from '@nestjs/common';
+import {SessionWord} from '../children/session-word/session-word.model';
+
 import {WordDto} from '../children/word/word.dto';
-import {SessionWordService} from '../children/session-word/session-word.service';
-import type {THero} from '../codenames';
 import {UserDto} from '../../user/user.dto';
 import {InitGameDto} from './dto/init-game-dto';
 import {FieldStateDto} from './dto/field-state-dto';
-import {WordService} from '../children/word/word.service';
-import type {TWordState} from '../codenames';
-import {SessionWord} from '../children/session-word/session-word.model';
 import {SessionDto} from '../children/session/session.dto';
+
+import {ERole} from '../children/role/role.enum';
 
 @Injectable()
 export class CodenamesGatewayService {
@@ -81,13 +86,17 @@ export class CodenamesGatewayService {
 
     const hero: THero = this.sessionService.getHeroInKeyByPosition(session.key, position);
 
+    session.count--;
+
     // Первая буква роли соответствует персонажу в ключе
-    if (player.role[0] !== hero) {
+    if (player.role[0] !== hero || session.count === 0) {
       const nextMove = session.move === ERole.BLUE_AGENT ? ERole.RED_CAPTAIN : ERole.BLUE_CAPTAIN;
       session.tip = '';
+      session.count = null;
       session.move = nextMove;
-      await this.sessionService.editSession(session);
     }
+
+    await this.sessionService.editSession(session);
   }
 
   async getPlayerByUserAndSession(user: User, session: Session): Promise<Player | null> {
@@ -141,6 +150,7 @@ export class CodenamesGatewayService {
       fieldState,
       move: session.move,
       tip: session.tip,
+      count: session.count,
       sessionId: session.id,
     };
   }

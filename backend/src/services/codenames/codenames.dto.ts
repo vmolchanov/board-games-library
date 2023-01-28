@@ -7,5 +7,5 @@ export class InitGameDto {
 
   @IsString()
   @IsNotEmpty()
-  chatId: string;
+  chatId: number;
 }

@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Put, Delete, Body, Param} from '@nestjs/common';
+import {Controller, Get, Post, Put, Delete, Body, Param, Query} from '@nestjs/common';
 import {SessionService} from './session.service';
 import {Session} from './session.model';
 import {SessionDto} from './session.dto';
@@ -10,6 +10,11 @@ export class SessionController {
   @Get()
   async getAllSessions(): Promise<Session[]> {
     return await this.sessionService.getAllSessions();
+  }
+
+  @Get('/params')
+  async getSessionByParams(@Query() data: Record<string, string | number | boolean>): Promise<Session[]> {
+    return await this.sessionService.getSessionByParams(data);
   }
 
   @Get(':id')
