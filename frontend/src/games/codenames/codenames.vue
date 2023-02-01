@@ -8,6 +8,11 @@
       Ключ
     </button>
 
+    <codenames-game-over-popup
+      v-if="isGameOver"
+      :role="winnerRole"
+    />
+
     <div v-if="isKeyShown" class="codenames__key">
       <div class="codenames__key-inner">
         <codenames-key :encoded-key="key"/>

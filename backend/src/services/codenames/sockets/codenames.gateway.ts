@@ -12,6 +12,7 @@ import {UseGuards} from '@nestjs/common';
 import {AuthService} from '../../auth/auth.service';
 import {UserDto} from '../../user/user.dto';
 import {InitGameDto} from './dto/init-game-dto';
+import {ERole} from '../children/role/role.enum';
 
 @WebSocketGateway(7001, {
   cors: {
@@ -49,9 +50,9 @@ export class CodenamesGateway {
 
       const initGameDto: InitGameDto = await this.codenamesGatewayService.initGame(user);
 
-      client.emit('initGame', initGameDto);
+      client.emit(EServerCommand.INIT_GAME, initGameDto);
     } catch {
-      client.emit('unauthorized');
+      client.emit(EServerCommand.UNAUTHORIZED);
     }
   }
 
@@ -98,7 +99,7 @@ export class CodenamesGateway {
 
     this.server
       .to(room.toString())
-      .emit('updateState', initGameDto);
+      .emit(EServerCommand.UPDATE_STATE, initGameDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -119,9 +120,23 @@ export class CodenamesGateway {
 
     delete initGameDto.currentPlayer;
 
+    const isGameOverByCardsLimit: boolean = await this.codenamesGatewayService.isGameOverByCardsLimit(initGameDto);
+    const isGameOverByOpeningKiller: boolean = await this.codenamesGatewayService.isGameOverByCardsLimit(initGameDto);
+
+    if (isGameOverByCardsLimit) {
+      this.server
+        .to(room.toString())
+        .emit(EServerCommand.GAME_OVER, {winner: initGameDto.prevMove});
+    }
+    if (isGameOverByOpeningKiller) {
+      this.server
+        .to(room.toString())
+        .emit(EServerCommand.GAME_OVER, {winner: `${(initGameDto.move as string).split('_')[0]}_AGENT`});
+    }
+
     this.server
       .to(room.toString())
-      .emit('updateState', initGameDto);
+      .emit(EServerCommand.UPDATE_STATE, initGameDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -133,10 +148,6 @@ export class CodenamesGateway {
       return;
     }
 
-    const key = await this.codenamesGatewayService.getKey(room);
-
-    console.log('key', key);
-
-    return key;
+    return await this.codenamesGatewayService.getKey(room);
   }
 }

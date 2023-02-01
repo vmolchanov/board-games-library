@@ -9,6 +9,8 @@ export class InitGameDto {
 
   move: ERole;
 
+  prevMove: ERole;
+
   tip: string;
 
   count: number;

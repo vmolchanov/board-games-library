@@ -3,8 +3,9 @@ import {defineComponent} from 'vue';
 import type {ICodenamesState, IFieldState, ITipFormSubmit} from './codenames';
 
 import {WebsocketService} from '../../config/websocket-service/websocket-service';
-import {EWsClientEvent, EWsServerEvent, EState} from './enums';
+import {EWsClientEvent, EWsServerEvent, EState, ERole} from './enums';
 
+import CodenamesGameOverPopup from './components/codenames-game-over-popup/codenames-game-over-popup.vue';
 import CodenamesKey from './components/codenames-key/codenames-key.vue';
 import CodenamesTitle from './components/codenames-title/codenames-title.vue';
 import TipForm from './components/tip-form/tip-form.vue';
@@ -13,6 +14,7 @@ import WordList from './components/word-list/word-list.vue';
 export default defineComponent({
   name: 'codenames-game',
   components: {
+    CodenamesGameOverPopup,
     CodenamesKey,
     CodenamesTitle,
     TipForm,
@@ -40,6 +42,11 @@ export default defineComponent({
       this.state!.sessionId = data.sessionId;
       this.state!.tip = data.tip;
     });
+
+    this.ws.on(EWsServerEvent.GAME_OVER, (response: {role: ERole}) => {
+      this.winnerRole = response.role;
+      this.isGameOver = true;
+    });
   },
   data() {
     return {
@@ -48,6 +55,11 @@ export default defineComponent({
       }),
       state: null as ICodenamesState | null,
       isFieldShown: false,
+
+      // properties for codenames-game-over-popup
+      isGameOver: false,
+      winnerRole: null as ERole | null,
+
       isKeyShown: false,
       key: '',
     };

@@ -1,11 +1,13 @@
-import {AllowNull, Column, Model, Table} from 'sequelize-typescript';
+import {AllowNull, Column, ForeignKey, Model, Table} from 'sequelize-typescript';
 
 import {ERole} from '../role/role.enum';
+import {Chat} from '../../../chat/chat.model';
 
 @Table
 export class Session extends Model<Session> {
+  @ForeignKey(() => Chat)
   @Column
-  chatId: string;
+  chatId: number;
 
   @Column
   key: string;

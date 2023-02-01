@@ -1,14 +1,13 @@
 export enum EServerCommand {
-  PLAYER_INFO = 'PLAYER_INFO',
-  ROOM_INFO = 'ROOM_INFO',
-  GAME_OVER = 'GAME_OVER',
   ERROR_JOIN_ROOM = 'ERROR_JOIN_ROOM',
+  INIT_GAME = 'initGame',
+  GAME_OVER = 'gameOver',
+  UNAUTHORIZED = 'unauthorized',
+  UPDATE_STATE = 'updateState',
 }
 
 export enum EClientCommand {
   JOIN_ROOM = 'JOIN_ROOM',
-  REQUEST_PLAYER_INFO = 'REQUEST_PLAYER_INFO',
-  REQUEST_ROOM_INFO = 'REQUEST_ROOM_INFO',
   MAKE_MOVE = 'MAKE_MOVE',
   MAKE_TIP = 'MAKE_TIP',
   GET_KEY = 'GET_KEY',

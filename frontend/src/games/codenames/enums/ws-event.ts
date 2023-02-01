@@ -1,6 +1,7 @@
 export enum EWsServerEvent {
   INIT_GAME = 'initGame',
   UPDATE_STATE = 'updateState',
+  GAME_OVER = 'gameOver',
 }
 
 export enum EWsClientEvent {

@@ -1,7 +1,6 @@
 import {Injectable} from '@nestjs/common';
 
-import type {THero} from '../codenames';
-import type {TWordState} from '../codenames';
+import type {THero, TWordState} from '../codenames';
 
 import {SessionService} from '../children/session/session.service';
 import {UserService} from '../../user/user.service';
@@ -96,7 +95,7 @@ export class CodenamesGatewayService {
       session.move = nextMove;
     }
 
-    await this.sessionService.editSession(session);
+    await this.sessionService.editSession(session as SessionDto);
   }
 
   async getPlayerByUserAndSession(user: User, session: Session): Promise<Player | null> {
@@ -120,6 +119,8 @@ export class CodenamesGatewayService {
     const sessionWords: SessionWord[] = await this.sessionWordService.getSessionWordByParams({
       sessionId: session.id,
     });
+
+    const prevMove = session.move;
 
     const fieldState: FieldStateDto[] = [];
 
@@ -152,7 +153,41 @@ export class CodenamesGatewayService {
       tip: session.tip,
       count: session.count,
       sessionId: session.id,
+      prevMove,
     };
+  }
+
+  async isGameOverByOpeningKiller(initGameDto: Omit<InitGameDto, 'currentPlayer'>): Promise<boolean> {
+    return initGameDto.fieldState
+      .map((state: FieldStateDto) => state.state)
+      .includes('KILLER');
+  }
+
+  async isGameOverByCardsLimit(initGameDto: Omit<InitGameDto, 'currentPlayer'>): Promise<boolean> {
+    const key = await this.getKey(initGameDto.sessionId);
+    const roleWithNineAgents = key[0] === 'B' ? ERole.BLUE_AGENT : ERole.RED_AGENT;
+    const roleWithEightAgents = roleWithNineAgents === ERole.BLUE_AGENT ? ERole.RED_AGENT : ERole.BLUE_AGENT;
+
+    const [
+      roleWithNineAgentsCount,
+      roleWithEightAgentsCount,
+    ] = initGameDto.fieldState.reduce((acc: [number, number], state: FieldStateDto) => {
+      if (state.state === roleWithNineAgents) {
+        acc[0]++;
+      }
+      if (state.state === roleWithEightAgents) {
+        acc[1]++;
+      }
+      return acc;
+    }, [0, 0]);
+
+    return roleWithNineAgentsCount === 9 || roleWithEightAgentsCount === 8;
+  }
+
+  getOpponentRole(role: ERole): ERole {
+    const [color, post] = (role as string).split('_');
+    const newColor = color === 'RED' ? 'BLUE' : 'RED';
+    return `${newColor}_AGENT` as ERole;
   }
 
   isPlayerHasRoles(player: Player, ...roles: ERole[]): boolean {
